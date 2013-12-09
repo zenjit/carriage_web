@@ -18,7 +18,7 @@ float positionVerticalCounterSentence;
 
 /* Boxes  */
 String[] words = {
-  "listen", "cool", "Zenjiskan", "music", "song", "1", "2", "3", "all"
+  "play", "repeat", "random", "all songs", "1", "2", "3", "4", "5", "volume", "shuffle"
 }; 
 Box[] boxes = new Box[words.length];
 Box bHead = null;
@@ -35,7 +35,7 @@ float fontSizeReference = 15;
 
 void setup() {
   frameRate(30);
-  size(screenWidth, screenHeight);
+  size(320, 220);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeReference);
   textAlign(CENTER);
