@@ -2,28 +2,12 @@
  Box-coding
  
  Rafael Redondo Tejedor CC - 12.2013
+ Zenjiskan - 12.2013
  */
 import java.util.List;
 
-/* General settings */
-int screenWidth = 320, screenHeight = 220;
-float boxHorizontalGap = 10, boxVerticalGap = 10;
-float marginLeftRight = 10, marginTop = 10;
-
-/* Some counters */
-float positionHorizontalCounter;
-float positionVerticalCounter;
-float positionHorizontalCounterSentence;
-float positionVerticalCounterSentence;
-
-/* Boxes  */
-String[] words = {
-  "play", "repeat", "random", "all songs", "1", "2", "3", "4", "5", "volume", "shuffle"
-}; 
-Box[] boxes = new Box[words.length];
-Box bHead = null;
-
-List<String> sentence;
+/* General page settings */
+int screenWidth = 600, screenHeight = 400;
 
 /* Boxes colors */
 int[] frameColor = new int[3];
@@ -31,13 +15,58 @@ int[] fillColor = new int[3];
 
 /* Fonts */
 int[] fontColor = new int[3];
-float fontSizeReference = 15;
+float fontSizeRef = 15;
+
+/* Boxes general settings */
+float boxHorizontalGap = 10, boxVerticalGap = 10;
+float delta = 10;
+float marginLeftRightC = 10, marginTopC = delta;
+float marginLeftRightI = 10, marginTopI = fontSizeRef * 2.5 + 10;
+float marginLeftRightO = 10, marginTopO = fontSizeRef * 5 + 10;
+
+/* Some counters */
+float posHCounterC, posHCounterI, posHCounterO;
+float posVCounterC, posVCounterI, posVCounterO;
+float posHCounterSentence;
+float posVCounterSentence;
+
+/* Type of boxes*/
+int action = 1;
+int song = 2;
+int option = 3;
+
+/* Command Boxes  */
+String[] cwords = {
+  "play", "repeat", "random"
+};
+
+/* Items Boxes  */
+String[] iwords = {
+  "all songs", "1", "2", "3", "4", "5"
+};
+
+/* Option Boxes  */
+String[] owords = {
+  "volume", "shuffle"
+};
+
+BoxCommand[] cboxes = new BoxCommand[cwords.length];
+BoxItem[] iboxes = new BoxItem[iwords.length];
+BoxOption[] oboxes = new BoxOption[owords.length];
+
+BoxCommand bcHead = null;
+BoxItem biHead = null;
+BoxOption boHead = null;
+
+List<String> sentence;
+
+
 
 void setup() {
   frameRate(30);
-  size(320, 220);
+  size(600, 400);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
-  textSize(fontSizeReference);
+  textSize(fontSizeRef);
   textAlign(CENTER);
 
   /* Color setup */
@@ -53,9 +82,18 @@ void setup() {
   fontColor[2] = 190;
 
   /* Creates a few boxes at the corner*/
-  for (int w = 0; w < words.length; w++) {
-    boxes[w] = new Box(words[w], 0, 0, fontSizeReference, frameColor, fillColor, fontColor);
+  for (int w = 0; w < cwords.length; w++) {
+    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
   }
+  
+  for (int w = 0; w < iwords.length; w++) {
+    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
+  }
+
+  for (int w = 0; w < owords.length; w++) {
+    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
+  }
+
 
   /* Reallocate boxes from the corner */
   reallocateBoxes();
@@ -64,14 +102,38 @@ void setup() {
 void draw() {
   /* mouse event */
   if (mousePressed) {
-    for (Box b: boxes) {
-      if (mouseX > b.positionHmov && mouseX < b.positionHmov + b.boxWidth &&
-        mouseY > b.positionVmov && mouseY < b.positionVmov + b.boxHeight) {
-        if (b.clickedStatus()) {
-          insertBox(b);
+    for (BoxCommand c: cboxes) {
+      if (mouseX > c.positionHmov && mouseX < c.positionHmov + c.boxWidth &&
+        mouseY > c.positionVmov && mouseY < c.positionVmov + c.boxHeight) {
+        if (c.clickedStatus()) {
+          insertCommandBox(c);
         } 
         else {
-          removeBox(b);
+          removeCommandBox(c);
+        }
+        reallocateBoxes();
+      }
+    }
+    for (BoxItem i: iboxes) {
+      if (mouseX > i.positionHmov && mouseX < i.positionHmov + i.boxWidth &&
+        mouseY > i.positionVmov && mouseY < i.positionVmov + i.boxHeight) {
+        if (i.clickedStatus()) {
+          insertItemBox(i);
+        } 
+        else {
+          removeItemBox(i);
+        }
+        reallocateBoxes();
+      }
+    }
+    for (BoxOption o: oboxes) {
+      if (mouseX > o.positionHmov && mouseX < o.positionHmov + o.boxWidth &&
+        mouseY > o.positionVmov && mouseY < o.positionVmov + o.boxHeight) {
+        if (o.clickedStatus()) {
+          insertOptionBox(o);
+        } 
+        else {
+          removeOptionBox(o);
         }
         reallocateBoxes();
       }
@@ -79,61 +141,127 @@ void draw() {
   }
 
   /* moves boxes */
-  for (Box b: boxes) {
-    b.move();
+  for (BoxCommand c: cboxes) {
+    c.move();
+  }
+  for (BoxItem i: iboxes) {
+    i.move();
+  }
+  for (BoxOption o: oboxes) {
+    o.move();
   }
 
   /* draws everything */
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight/2, width-marginLeftRight, screenHeight/2-marginTop, 5);
-  for (Box b: boxes) {
-    b.display();
+  rect(marginLeftRightC/2, screenHeight/2, width-marginLeftRightC, screenHeight/2-marginTopC, 5);
+  for (BoxCommand c: cboxes) {
+    c.drawBoxes();
+  }
+  for (BoxItem i: iboxes) {
+    i.drawBoxes();
+  }  
+  for (BoxOption o: oboxes) {
+    o.drawBoxes();
   }
 }
 
 void reallocateBoxes() {
-  positionHorizontalCounter = marginLeftRight;
-  positionVerticalCounter = marginTop;
+  posHCounterC = marginLeftRightC;
+  posVCounterC = marginTopC;
+  posHCounterI = marginLeftRightI;
+  posVCounterI = marginTopI;
+  posHCounterO = marginLeftRightO;
+  posVCounterO = marginTopO;
 
-  for (Box b: boxes) {
-    if (!b.active) {
-      if (positionHorizontalCounter + b.boxWidth > width - marginLeftRight) {
-        positionHorizontalCounter = marginLeftRight;
-        positionVerticalCounter += b.boxHeight + boxVerticalGap;
+  for (BoxCommand c: cboxes) {
+    if (!c.active) {
+      if (posHCounterC + c.boxWidth > width - marginLeftRightC) {
+        posHCounterC = marginLeftRightC;
+        posVCounterC += c.boxHeight + boxVerticalGap;
       }
-      b.reallocate(positionHorizontalCounter, positionVerticalCounter);
-      positionHorizontalCounter += b.boxWidth + boxHorizontalGap;
+      c.reallocate(posHCounterC, posVCounterC);
+      posHCounterC += c.boxWidth + boxHorizontalGap;
+    }
+  }
+  
+  for (BoxItem i: iboxes) {
+    if (!i.active) {
+      if (posHCounterI + i.boxWidth > width - marginLeftRightI) {
+        posHCounterI = marginLeftRightI;
+        posVCounterI += i.boxHeight + boxVerticalGap;
+      }
+      i.reallocate(posHCounterI, posVCounterI);
+      posHCounterI += i.boxWidth + boxHorizontalGap;
     }
   }
 
-  positionHorizontalCounterSentence = marginLeftRight;
-  positionVerticalCounterSentence = screenHeight/2 + marginTop;
-  Box bPointer = bHead;
-  sentence = new ArrayList<String>();
-  while (bPointer != null) {
-    sentence.add(bPointer.keyword);
-    if (positionHorizontalCounterSentence + bPointer.boxWidth > width - marginLeftRight) {
-      positionHorizontalCounterSentence = marginLeftRight;
-      positionVerticalCounterSentence += bPointer.boxHeight + boxVerticalGap;
+  for (BoxOption o: oboxes) {
+    if (!o.active) {
+      if (posHCounterO + o.boxWidth > width - marginLeftRightO) {
+        posHCounterO = marginLeftRightO;
+        posVCounterO += o.boxHeight + boxVerticalGap;
+      }
+      o.reallocate(posHCounterO, posVCounterO);
+      posHCounterO += o.boxWidth + boxHorizontalGap;
     }
-    bPointer.reallocate(positionHorizontalCounterSentence, positionVerticalCounterSentence);
-    positionHorizontalCounterSentence += bPointer.boxWidth + boxHorizontalGap;
-    bPointer = bPointer.next;
   }
+
+  posHCounterSentence = marginLeftRightC;
+  posVCounterSentence = screenHeight/2 + marginTopC;
+  
+  BoxCommand bcPointer = bcHead;
+  BoxItem biPointer = biHead;
+  BoxOption boPointer = boHead;
+  
+  sentence = new ArrayList<String>();
+  
+  while (bcPointer != null) {
+    sentence.add(bcPointer.keyword);
+    if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRightC) {
+      posHCounterSentence = marginLeftRightC;
+      posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
+    }
+    bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
+    posHCounterSentence += bcPointer.boxWidth + boxHorizontalGap;
+    bcPointer = bcPointer.next;
+  }
+  
+  while (biPointer != null) {
+    sentence.add(biPointer.keyword);
+    if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRightC) {
+      posHCounterSentence = marginLeftRightC;
+      posVCounterSentence += biPointer.boxHeight + boxVerticalGap;
+    }
+    biPointer.reallocate(posHCounterSentence, posVCounterSentence);
+    posHCounterSentence += biPointer.boxWidth + boxHorizontalGap;
+    biPointer = biPointer.next;
+  }
+  
+  while (boPointer != null) {
+    sentence.add(boPointer.keyword);
+    if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRightC) {
+      posHCounterSentence = marginLeftRightC;
+      posVCounterSentence += boPointer.boxHeight + boxVerticalGap;
+    }
+    boPointer.reallocate(posHCounterSentence, posVCounterSentence);
+    posHCounterSentence += boPointer.boxWidth + boxHorizontalGap;
+    boPointer = boPointer.next;
+  }
+  
   print("Sentence: ");
   for (String z : sentence)
     print(z + ' ');
   println();
 }
 
-void insertBox(Box aBox) {
-  if (bHead == null) {
-    bHead = aBox;
+void insertCommandBox(BoxCommand aBox) {
+  if (bcHead == null) {
+    bcHead = aBox;
   } 
   else {
-    Box bPointer = bHead; 
+      BoxCommand bPointer = bcHead; 
     while (bPointer.next != null)
     {
       bPointer = bPointer.next;
@@ -142,15 +270,79 @@ void insertBox(Box aBox) {
   }
 }
 
-void removeBox(Box aBox) {
-  Box aPointer;
-  if (aBox.equals(bHead)) {
-    aPointer = bHead;
-    bHead = bHead.next;
+void insertItemBox(BoxItem aBox) {
+  if (biHead == null) {
+    biHead = aBox;
+  } 
+  else {
+      BoxItem bPointer = biHead; 
+    while (bPointer.next != null)
+    {
+      bPointer = bPointer.next;
+    }
+    bPointer.next = aBox;
+  }
+}
+
+void insertOptionBox(BoxOption aBox) {
+  if (boHead == null) {
+    boHead = aBox;
+  } 
+  else {
+      BoxOption bPointer = boHead; 
+    while (bPointer.next != null)
+    {
+      bPointer = bPointer.next;
+    }
+    bPointer.next = aBox;
+  }
+}
+
+void removeCommandBox(BoxCommand aBox) {
+  BoxCommand aPointer;
+  if (aBox.equals(bcHead)) {
+    aPointer = bcHead;
+    bcHead = bcHead.next;
     aPointer.next = null;
   }
   else {
-    Box bPointer = bHead;
+    BoxCommand bPointer = bcHead;
+    while (!aBox.equals (bPointer.next)) {
+      bPointer = bPointer.next;
+    }
+    aPointer = bPointer.next;
+    bPointer.next = bPointer.next.next;
+    aPointer.next = null;
+  }
+}
+
+void removeItemBox(BoxItem aBox) {
+  BoxItem aPointer;
+  if (aBox.equals(biHead)) {
+    aPointer = biHead;
+    biHead = biHead.next;
+    aPointer.next = null;
+  }
+  else {
+    BoxItem bPointer = biHead;
+    while (!aBox.equals (bPointer.next)) {
+      bPointer = bPointer.next;
+    }
+    aPointer = bPointer.next;
+    bPointer.next = bPointer.next.next;
+    aPointer.next = null;
+  }
+}
+
+void removeOptionBox(BoxOption aBox) {
+  BoxOption aPointer;
+  if (aBox.equals(boHead)) {
+    aPointer = boHead;
+    boHead = boHead.next;
+    aPointer.next = null;
+  }
+  else {
+    BoxOption bPointer = boHead;
     while (!aBox.equals (bPointer.next)) {
       bPointer = bPointer.next;
     }
