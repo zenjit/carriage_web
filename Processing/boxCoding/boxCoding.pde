@@ -65,30 +65,30 @@ void setup() {
 
   /* Color setup */
   // There must be a better way to set this
-  frameColor[0] = 211; 
-  frameColor[1] = 152; 
-  frameColor[2] = 10;
+  frameColor[0] = 118; 
+  frameColor[1] = 118; 
+  frameColor[2] = 118;
   activeFrameColor[0] = 0; 
   activeFrameColor[1] = 255; 
   activeFrameColor[2] = 0;
-  fillColor[0] = 211; 
-  fillColor[1] = 211; 
-  fillColor[2] = 211;
+  fillColor[0] = 201; 
+  fillColor[1] = 102; 
+  fillColor[2] = 10;
   fontColor[0] = 0; 
   fontColor[1] = 0; 
   fontColor[2] = 0;
 
   /* Creates a few boxes at the corner*/
   for (int w = 0; w < cwords.length; w++) {
-    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, activeFrameColor, fillColor, fontColor);
+    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
   }
   
   for (int w = 0; w < iwords.length; w++) {
-    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
+    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
   }
 
   for (int w = 0; w < owords.length; w++) {
-    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
+    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
   }
 
   /* Reallocate boxes from the corner */
@@ -96,45 +96,110 @@ void setup() {
 }
 
 void draw() {
-  /* mouse event detented on boxes*/
+  /* mouse event detected on boxes*/
   if (mousePressed) {
+    /* control boxes */
     for (BoxCommand c: cboxes) {
-      if (mouseX > c.positionHmov && mouseX < c.positionHmov + c.boxWidth &&
-        mouseY > c.positionVmov && mouseY < c.positionVmov + c.boxHeight) {
-        if (c.clickedStatus()) {
-          for (BoxItem i: iboxes) {
-            i.setAvailable(true);
+      if (c.getAvailable() || c.getUsed()) {
+        /* mouse event detected on control box */
+        if (c.overTheBox()) {
+          /* command box to be used */
+          if (c.clickedStatus()) {
+            insertCommandBox(c);
+            for (BoxCommand d: cboxes) {
+              d.setUnavailable();
+            }
+            for (BoxItem i: iboxes) {
+              i.setAvailable();
+            }
           }
-          insertCommandBox(c);
-        } 
-        else {
-          removeCommandBox(c);
+          /* already used command box */
+          else {
+            removeCommandBox(c);
+            for (BoxCommand d: cboxes) {
+              d.setAvailable();
+            }
+            for (BoxItem i: iboxes) {
+              i.setUnavailable();
+            }
+            for (BoxOption o: oboxes) {
+              o.setUnavailable();
+            }
+          }
+          relocateBoxes();
         }
-        relocateBoxes();
       }
     }
+    /* item boxes */
     for (BoxItem i: iboxes) {
-      if (mouseX > i.positionHmov && mouseX < i.positionHmov + i.boxWidth &&
-        mouseY > i.positionVmov && mouseY < i.positionVmov + i.boxHeight) {
-        if (i.clickedStatus()) {
-          insertItemBox(i);
-        } 
-        else {
-          removeItemBox(i);
+      if (i.getAvailable() || i.getUsed()) {
+        /* mouse event detected on item box */
+        if (i.overTheBox()) {
+          /* item box to be used */
+          if (i.clickedStatus()) {
+            /* if all songs has been selected */
+            if (i.getKey() == "all songs") {
+              insertItemBox(i);
+              for (BoxItem h: iboxes) {
+                h.setUnavailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }
+            }
+            /* ...or a single track */
+            else {
+              insertItemBox(i);
+              i.setUnavailable();
+              for (BoxItem h: iboxes) {
+                if (h.getKey() == "all songs") {
+                  h.setUnavailable();
+                }
+              }
+              for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }
+            }
+          }
+          /* already used item box */
+          else {
+            removeItemBox(i);
+            if (i.getKey() == "all songs") {
+              for (BoxItem h: iboxes) {
+                h.setAvailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setUnavailable();
+              }
+            }
+            else {
+              for (BoxItem h: iboxes) {
+                h.setAvailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setUnavailable();
+              }
+            }
+          }
+          relocateBoxes();
         }
-        relocateBoxes();
       }
     }
+    /* option boxes */
     for (BoxOption o: oboxes) {
-      if (mouseX > o.positionHmov && mouseX < o.positionHmov + o.boxWidth &&
-        mouseY > o.positionVmov && mouseY < o.positionVmov + o.boxHeight) {
-        if (o.clickedStatus()) {
-          insertOptionBox(o);
-        } 
-        else {
-          removeOptionBox(o);
+      if (o.getAvailable() || o.getUsed()) {
+        /* mouse event detected on option box */
+        if (o.overTheBox()) {
+          /* option box to be used */
+          if (o.clickedStatus()) {
+            insertOptionBox(o);
+          } 
+          /* already used option box */
+          else {
+            removeOptionBox(o);
+          }
+          relocateBoxes();
         }
-        relocateBoxes();
       }
     }
   }
@@ -256,6 +321,7 @@ void relocateBoxes() {
 }
 
 void insertCommandBox(BoxCommand aBox) {
+  aBox.used = true;
   if (bcHead == null) {
     bcHead = aBox;
   } 
@@ -270,6 +336,7 @@ void insertCommandBox(BoxCommand aBox) {
 }
 
 void insertItemBox(BoxItem aBox) {
+  aBox.used = true;
   if (biHead == null) {
     biHead = aBox;
   } 
@@ -284,6 +351,7 @@ void insertItemBox(BoxItem aBox) {
 }
 
 void insertOptionBox(BoxOption aBox) {
+  aBox.used = true;
   if (boHead == null) {
     boHead = aBox;
   } 
@@ -298,6 +366,7 @@ void insertOptionBox(BoxOption aBox) {
 }
 
 void removeCommandBox(BoxCommand aBox) {
+  aBox.used = false;
   BoxCommand aPointer;
   if (aBox.equals(bcHead)) {
     aPointer = bcHead;
@@ -316,6 +385,7 @@ void removeCommandBox(BoxCommand aBox) {
 }
 
 void removeItemBox(BoxItem aBox) {
+  aBox.used = false;
   BoxItem aPointer;
   if (aBox.equals(biHead)) {
     aPointer = biHead;
@@ -334,6 +404,7 @@ void removeItemBox(BoxItem aBox) {
 }
 
 void removeOptionBox(BoxOption aBox) {
+  aBox.used = false;
   BoxOption aPointer;
   if (aBox.equals(boHead)) {
     aPointer = boHead;

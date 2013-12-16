@@ -1,5 +1,6 @@
 class BoxCommand implements Box {
   int[] frameColor = new int[3];
+  int[] frameAColor = new int[3];
   int[] fillColor = new int[3];
   int[] fontColor = new int[3];
   float fontSize;
@@ -10,16 +11,15 @@ class BoxCommand implements Box {
   float cornerRadius = 5; 
   boolean active = false;
   float transparency = 150;
-  String[] blockedWords;
-  boolean blockedStatus = false;
-  boolean available;
+  boolean available = true;
+  boolean used = false;
   BoxCommand next = null;
   
     /* Constructor */
 //  Box(String keyw, float posH, float posV, float fontSizeR, 
 //  int[] frameC, int[] fillC, int[] fontC);
 
-  BoxCommand(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] fillC, int[] fontC){
+  BoxCommand(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] frameA, int[] fillC, int[] fontC){
     keyword = keyw;
     boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
     boxHeight = fontSizeR * 1.5;
@@ -27,14 +27,17 @@ class BoxCommand implements Box {
     positionV = positionVmov = posV;
     fontSize = fontSizeR;
     frameColor = frameC;
+    frameAColor = frameA;
     fillColor = fillC;
     fontColor = fontC;
   }
 
   void drawBoxes(){
     strokeWeight(2);
-    stroke(frameColor[0], frameColor[1], frameColor[2]);
-    
+    if (available == true) {
+      stroke(frameAColor[0], frameAColor[1], frameAColor[2]);
+    }
+    else stroke(frameColor[0], frameColor[1], frameColor[2]);
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
     rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
@@ -60,19 +63,12 @@ class BoxCommand implements Box {
     return active;
   }
   
-  void setAvailable(boolean set) {
-    available = set;
-  
-  }
-  
-  void setUnavailable(boolean set) {
-    available = set;
-  
-  }
-  
-  boolean getAvailable() {
-    return available;
-  
+  boolean overTheBox () {
+    if (  mouseX > positionHmov && mouseX < positionHmov + boxWidth &&
+          mouseY > positionVmov && mouseY < positionVmov + boxHeight ) {
+      return true;
+    }
+    else return false;
   }
   
   void move() {
@@ -80,4 +76,38 @@ class BoxCommand implements Box {
     positionVmov += 0.1*(positionV - positionVmov);
   }
 
+  void setAvailable() {
+    available = true;
+    setBoxColor();
+  }
+  
+  void setUnavailable() {
+    available = false;
+    drawBoxes();
+  }
+  
+  boolean getAvailable() {
+    return available;
+  }
+  
+  boolean getUsed() {
+    return used;
+  }
+
+  void setUsed() {
+    used = true;
+  }
+  
+  void setUnused() {
+    used = false;
+  }
+
+  void setBoxColor() {
+    drawBoxes();
+  }
+
+  String getKey(BoxCommand c) {
+    return c.keyword;
+  }
+  
 }

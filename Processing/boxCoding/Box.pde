@@ -15,11 +15,3 @@ interface Box {
   /* Relative box movements */
   void move();
 }
-
-
-//
-//class BoxSongs extends Box {
-//}
-//
-//class BoxSongsList extends Box {
-//}
