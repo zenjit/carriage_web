@@ -1,4 +1,4 @@
-class BoxItem implements Box {
+class BoxItem extends Box {
   int[] frameColor = new int[3];
   int[] frameAColor = new int[3];
   int[] fillColor = new int[3];
