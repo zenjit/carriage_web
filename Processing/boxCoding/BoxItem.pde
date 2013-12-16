@@ -12,7 +12,7 @@ class BoxItem implements Box {
   float transparency = 150;
   String[] blockedWords;
   boolean blockedStatus = false;
-  int[] type;
+  boolean available;
   BoxItem next = null;
   
     /* Constructor */
@@ -64,5 +64,23 @@ class BoxItem implements Box {
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
   }
+  
+  void setAvailable(boolean set) {
+    available = set;
+    setBoxColor();
+  }
+  
+  void setUnavailable(boolean set) {
+    available = set;
+  
+  }
+  
+  boolean getAvailable() {
+    return available;
+  
+  }
 
+  void setBoxColor() {
+    setBoxColor
+  }
 }

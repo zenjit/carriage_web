@@ -12,7 +12,7 @@ class BoxOption implements Box {
   float transparency = 150;
   String[] blockedWords;
   boolean blockedStatus = false;
-  int[] type;
+  boolean available;
   BoxOption next = null;
   
     /* Constructor */
@@ -63,6 +63,21 @@ class BoxOption implements Box {
   void move() {
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
+  }
+  
+  void setAvailable(boolean set) {
+    available = set;
+  
+  }
+  
+  void setUnavailable(boolean set) {
+    available = set;
+  
+  }
+  
+  boolean getAvailable() {
+    return available;
+  
   }
 
 }

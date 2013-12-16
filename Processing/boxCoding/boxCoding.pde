@@ -11,6 +11,7 @@ int screenWidth = 600, screenHeight = 400;
 
 /* Boxes colors */
 int[] frameColor = new int[3];
+int[] activeFrameColor = new int[3];
 int[] fillColor = new int[3];
 
 /* Fonts */
@@ -29,11 +30,6 @@ float posHCounterC, posHCounterI, posHCounterO;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
-
-/* Type of boxes*/
-int action = 1;
-int song = 2;
-int option = 3;
 
 /* Command Boxes  */
 String[] cwords = {
@@ -60,8 +56,6 @@ BoxOption boHead = null;
 
 List<String> sentence;
 
-
-
 void setup() {
   frameRate(30);
   size(600, 400);
@@ -74,16 +68,19 @@ void setup() {
   frameColor[0] = 211; 
   frameColor[1] = 152; 
   frameColor[2] = 10;
-  fillColor[0] = 201; 
-  fillColor[1] = 102; 
-  fillColor[2] = 10;
-  fontColor[0] = 190; 
-  fontColor[1] = 190; 
-  fontColor[2] = 190;
+  activeFrameColor[0] = 0; 
+  activeFrameColor[1] = 255; 
+  activeFrameColor[2] = 0;
+  fillColor[0] = 211; 
+  fillColor[1] = 211; 
+  fillColor[2] = 211;
+  fontColor[0] = 0; 
+  fontColor[1] = 0; 
+  fontColor[2] = 0;
 
   /* Creates a few boxes at the corner*/
   for (int w = 0; w < cwords.length; w++) {
-    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
+    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, activeFrameColor, fillColor, fontColor);
   }
   
   for (int w = 0; w < iwords.length; w++) {
@@ -94,24 +91,26 @@ void setup() {
     oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef, frameColor, fillColor, fontColor);
   }
 
-
   /* Reallocate boxes from the corner */
-  reallocateBoxes();
+  relocateBoxes();
 }
 
 void draw() {
-  /* mouse event */
+  /* mouse event detented on boxes*/
   if (mousePressed) {
     for (BoxCommand c: cboxes) {
       if (mouseX > c.positionHmov && mouseX < c.positionHmov + c.boxWidth &&
         mouseY > c.positionVmov && mouseY < c.positionVmov + c.boxHeight) {
         if (c.clickedStatus()) {
+          for (BoxItem i: iboxes) {
+            i.setAvailable(true);
+          }
           insertCommandBox(c);
         } 
         else {
           removeCommandBox(c);
         }
-        reallocateBoxes();
+        relocateBoxes();
       }
     }
     for (BoxItem i: iboxes) {
@@ -123,7 +122,7 @@ void draw() {
         else {
           removeItemBox(i);
         }
-        reallocateBoxes();
+        relocateBoxes();
       }
     }
     for (BoxOption o: oboxes) {
@@ -135,7 +134,7 @@ void draw() {
         else {
           removeOptionBox(o);
         }
-        reallocateBoxes();
+        relocateBoxes();
       }
     }
   }
@@ -167,7 +166,7 @@ void draw() {
   }
 }
 
-void reallocateBoxes() {
+void relocateBoxes() {
   posHCounterC = marginLeftRightC;
   posVCounterC = marginTopC;
   posHCounterI = marginLeftRightI;

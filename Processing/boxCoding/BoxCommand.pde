@@ -4,7 +4,7 @@ class BoxCommand implements Box {
   int[] fontColor = new int[3];
   float fontSize;
   String keyword;
-  float boxWidth, boxHeight; 
+  float boxWidth, boxHeight;
   float positionH, positionV; 
   float positionHmov, positionVmov;
   float cornerRadius = 5; 
@@ -12,7 +12,7 @@ class BoxCommand implements Box {
   float transparency = 150;
   String[] blockedWords;
   boolean blockedStatus = false;
-  int[] type;
+  boolean available;
   BoxCommand next = null;
   
     /* Constructor */
@@ -58,6 +58,21 @@ class BoxCommand implements Box {
     while (millis()-time < 200) {
     }
     return active;
+  }
+  
+  void setAvailable(boolean set) {
+    available = set;
+  
+  }
+  
+  void setUnavailable(boolean set) {
+    available = set;
+  
+  }
+  
+  boolean getAvailable() {
+    return available;
+  
   }
   
   void move() {
