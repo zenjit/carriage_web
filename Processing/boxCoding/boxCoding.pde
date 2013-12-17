@@ -150,6 +150,7 @@ void actionHandler () {
   for (BoxItem i: iboxes) {
     if (i.isClicked()) {
       if (i.getStatus() == 3) {
+        removeBoxItem(i);
         if (i.getKey() == allsongsKey) {
           for (BoxOption o: oboxes) {
             if (o.getStatus() == 3)
@@ -163,7 +164,6 @@ void actionHandler () {
         }
         else {
           nSongs--;
-          removeBoxItem(i);
           if (nSongs == 0) {
             for (BoxOption o: oboxes) {
               if (o.getStatus() == 3) {
@@ -241,10 +241,6 @@ void actionHandler () {
 void relocateBoxes() {
   posHCounterC = marginLeftRightC;
   posVCounterC = marginTopC;
-  posHCounterI = marginLeftRightI;
-  posVCounterI = marginTopI;
-  posHCounterO = marginLeftRightO;
-  posVCounterO = marginTopO;
 
   for (BoxCommand c: cboxes) {
     if (c.getStatus() != 3) {
@@ -257,6 +253,9 @@ void relocateBoxes() {
     }
   }
 
+  posHCounterI = marginLeftRightI;
+  posVCounterI = posVCounterC + cboxes[0].boxHeight + boxVerticalGap+10;
+
   for (BoxItem i: iboxes) {
     if (i.getStatus() != 3) {
       if (posHCounterI + i.boxWidth > width - marginLeftRightI) {
@@ -267,6 +266,10 @@ void relocateBoxes() {
       posHCounterI += i.boxWidth + boxHorizontalGap;
     }
   }
+ 
+  posHCounterO = marginLeftRightO;
+  posVCounterO = posVCounterI + iboxes[0].boxHeight + boxVerticalGap+10;
+
 
   for (BoxOption o: oboxes) {
     if (o.getStatus() != 3) {
