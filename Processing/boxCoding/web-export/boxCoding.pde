@@ -8,21 +8,28 @@ import java.util.List;
 
 /* General page settings */
 int screenWidth = 600, screenHeight = 400;
+
+/* Boxes colors */
+//int[] frameColor = new int[3];
+//int[] activeFrameColor = new int[3];
+//int[] fillColor = new int[3];
+
+/* Fonts */
+//int[] fontColor = new int[3];
+float fontSizeRef = 15;
+
+/* Boxes general settings */
 float boxHorizontalGap = 10, boxVerticalGap = 10;
-float marginLeftRightC = 10, marginTopC = 10;
-float marginLeftRightI = 10, marginTopI = 50;
-float marginLeftRightO = 10, marginTopO = 100;
+float delta = 10;
+float marginLeftRightC = 10, marginTopC = delta;
+float marginLeftRightI = 10, marginTopI = fontSizeRef * 2.5 + 10;
+float marginLeftRightO = 10, marginTopO = fontSizeRef * 5 + 10;
 
 /* Some counters */
 float posHCounterC, posHCounterI, posHCounterO;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
-
-/* Type of boxes*/
-int action = 1;
-int song = 2;
-int option = 3;
 
 /* Command Boxes  */
 String[] cwords = {
@@ -49,88 +56,137 @@ BoxOption boHead = null;
 
 List<String> sentence;
 
-/* Boxes colors */
-int[] frameColor = new int[3];
-int[] fillColor = new int[3];
-
-/* Fonts */
-int[] fontColor = new int[3];
-float fontSizeReference = 15;
-
 void setup() {
   frameRate(30);
   size(600, 400);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
-  textSize(fontSizeReference);
+  textSize(fontSizeRef);
   textAlign(CENTER);
-
-  /* Color setup */
-  // There must be a better way to set this
-  frameColor[0] = 211; 
-  frameColor[1] = 152; 
-  frameColor[2] = 10;
-  fillColor[0] = 201; 
-  fillColor[1] = 102; 
-  fillColor[2] = 10;
-  fontColor[0] = 190; 
-  fontColor[1] = 190; 
-  fontColor[2] = 190;
 
   /* Creates a few boxes at the corner*/
   for (int w = 0; w < cwords.length; w++) {
-    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeReference, frameColor, fillColor, fontColor);
+    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef);
   }
   
   for (int w = 0; w < iwords.length; w++) {
-    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeReference, frameColor, fillColor, fontColor);
+    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef);
+    iboxes[w].setUnavailable();
   }
 
   for (int w = 0; w < owords.length; w++) {
-    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeReference, frameColor, fillColor, fontColor);
+    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef);
+    oboxes[w].setUnavailable();
   }
 
-
   /* Reallocate boxes from the corner */
-  reallocateBoxes();
+  relocateBoxes();
 }
 
 void draw() {
-  /* mouse event */
+  /* mouse event detected on boxes*/
   if (mousePressed) {
+    /* control boxes */
     for (BoxCommand c: cboxes) {
-      if (mouseX > c.positionHmov && mouseX < c.positionHmov + c.boxWidth &&
-        mouseY > c.positionVmov && mouseY < c.positionVmov + c.boxHeight) {
-        if (c.clickedStatus()) {
-          insertCommandBox(c);
-        } 
-        else {
-          removeCommandBox(c);
+      if (c.getAvailable() || c.getUsed()) {
+        /* mouse event detected on control box */
+        if (c.overTheBox()) {
+          /* command box to be used */
+          if (c.clickedStatus()) {
+            insertCommandBox(c);
+            for (BoxCommand d: cboxes) {
+              d.setUnavailable();
+            }
+            for (BoxItem i: iboxes) {
+              i.setAvailable();
+            }
+          }
+          /* already used command box */
+          else {
+            removeCommandBox(c);
+            for (BoxCommand d: cboxes) {
+              d.setAvailable();
+            }
+            for (BoxItem i: iboxes) {
+              i.setUnavailable();
+            }
+            for (BoxOption o: oboxes) {
+              o.setUnavailable();
+            }
+          }
+          relocateBoxes();
         }
-        reallocateBoxes();
       }
     }
+    /* item boxes */
     for (BoxItem i: iboxes) {
-      if (mouseX > i.positionHmov && mouseX < i.positionHmov + i.boxWidth &&
-        mouseY > i.positionVmov && mouseY < i.positionVmov + i.boxHeight) {
-        if (i.clickedStatus()) {
-          insertItemBox(i);
-        } 
-        else {
-          removeItemBox(i);
+      if (i.getAvailable() || i.getUsed()) {
+        /* mouse event detected on item box */
+        if (i.overTheBox()) {
+          /* item box to be used */
+          if (i.clickedStatus()) {
+            /* if all songs has been selected */
+            if (i.getKey() == "all songs") {
+              insertItemBox(i);
+              for (BoxItem h: iboxes) {
+                h.setUnavailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }
+            }
+            /* ...or a single track */
+            else {
+              insertItemBox(i);
+              i.setUnavailable();
+              for (BoxItem h: iboxes) {
+                if (h.getKey() == "all songs") {
+                  h.setUnavailable();
+                }
+              }
+              for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }
+            }
+          }
+          /* already used item box */
+          else {
+            removeItemBox(i);
+            if (i.getKey() == "all songs") {
+              for (BoxItem h: iboxes) {
+                h.setAvailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setUnavailable();
+              }
+            }
+            else {
+              for (BoxItem h: iboxes) {
+                h.setAvailable();
+              }
+              for (BoxOption o: oboxes) {
+                o.setUnavailable();
+              }
+            }
+          }
+          relocateBoxes();
         }
-        reallocateBoxes();
       }
     }
+    /* option boxes */
     for (BoxOption o: oboxes) {
-      if (mouseX > o.positionHmov && mouseX < o.positionHmov + o.boxWidth &&
-        mouseY > o.positionVmov && mouseY < o.positionVmov + o.boxHeight) {
-        if (o.clickedStatus()) {
-          insertOptionBox(o);
-        } 
-        else {
-          removeOptionBox(o);
+      if (o.getAvailable() || o.getUsed()) {
+        /* mouse event detected on option box */
+        if (o.overTheBox()) {
+          /* option box to be used */
+          if (o.clickedStatus()) {
+            insertOptionBox(o);
+          } 
+          /* already used option box */
+          else {
+            removeOptionBox(o);
+          }
+          relocateBoxes();
         }
-        reallocateBoxes();
       }
     }
   }
@@ -162,7 +218,7 @@ void draw() {
   }
 }
 
-void reallocateBoxes() {
+void relocateBoxes() {
   posHCounterC = marginLeftRightC;
   posVCounterC = marginTopC;
   posHCounterI = marginLeftRightI;
@@ -252,6 +308,7 @@ void reallocateBoxes() {
 }
 
 void insertCommandBox(BoxCommand aBox) {
+  aBox.used = true;
   if (bcHead == null) {
     bcHead = aBox;
   } 
@@ -266,6 +323,7 @@ void insertCommandBox(BoxCommand aBox) {
 }
 
 void insertItemBox(BoxItem aBox) {
+  aBox.used = true;
   if (biHead == null) {
     biHead = aBox;
   } 
@@ -280,6 +338,7 @@ void insertItemBox(BoxItem aBox) {
 }
 
 void insertOptionBox(BoxOption aBox) {
+  aBox.used = true;
   if (boHead == null) {
     boHead = aBox;
   } 
@@ -294,6 +353,7 @@ void insertOptionBox(BoxOption aBox) {
 }
 
 void removeCommandBox(BoxCommand aBox) {
+  aBox.used = false;
   BoxCommand aPointer;
   if (aBox.equals(bcHead)) {
     aPointer = bcHead;
@@ -312,6 +372,7 @@ void removeCommandBox(BoxCommand aBox) {
 }
 
 void removeItemBox(BoxItem aBox) {
+  aBox.used = false;
   BoxItem aPointer;
   if (aBox.equals(biHead)) {
     aPointer = biHead;
@@ -330,6 +391,7 @@ void removeItemBox(BoxItem aBox) {
 }
 
 void removeOptionBox(BoxOption aBox) {
+  aBox.used = false;
   BoxOption aPointer;
   if (aBox.equals(boHead)) {
     aPointer = boHead;
@@ -350,233 +412,169 @@ void removeOptionBox(BoxOption aBox) {
 List<String> giveMeMySentence() {
   return sentence;
 }
-interface Box {
+class Box {
+
+  int[] frameColor = new int[3];
+  int[] frameAColor = new int[3];
+  int[] fillColor = new int[3];
+  int[] fontColor = new int[3];
+  float fontSize;
+  String keyword;
+  float boxWidth, boxHeight;
+  float positionH, positionV; 
+  float positionHmov, positionVmov;
+  float cornerRadius = 5; 
+  boolean active = false;
+  float transparency = 150;
+  boolean available = true;
+  boolean used = false;
 
   /* Constructor */
-  //Box(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] fillC, int[] fontC);
+  Box(String keyw, float posH, float posV, float fontSizeR) {
+    /* Color setup */
+    // There must be a better way to set this
+    
+    frameColor[0] = 118; 
+    frameColor[1] = 118; 
+    frameColor[2] = 118;
+    frameAColor[0] = 0; 
+    frameAColor[1] = 255; 
+    frameAColor[2] = 0;
+    fillColor[0] = 201;
+    fillColor[1] = 102; 
+    fillColor[2] = 10;
+    fontColor[0] = 0; 
+    fontColor[1] = 0; 
+    fontColor[2] = 0;
+
+    fontSize = fontSizeR;
+
+    keyword = keyw;
+
+    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
+    boxHeight = fontSizeR * 1.5;
+    positionH = positionHmov = posH;
+    positionV = positionVmov = posV;
+  }
 
   /* Draws box */
-  void drawBoxes();
+  void drawBoxes() {
+    strokeWeight(2);
+    if (available == true) {
+      stroke(frameAColor[0], frameAColor[1], frameAColor[2]);
+    }
+    else stroke(frameColor[0], frameColor[1], frameColor[2]);
+    
+    fill(fillColor[0], fillColor[1], fillColor[2], transparency);
+    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
+    fill(fontColor[0], fontColor[1], fontColor[2], transparency);
+    //    textSize(fontSize); // uncomment this for custom fontSize
+    text(keyword, positionHmov, positionVmov+4, boxWidth, boxHeight);
+    //    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);
+  }
 
-  /* Changues absolute box location */
-  void reallocate(float posH, float posV);
 
-  /* Changes box status and appearance */
-  boolean clickedStatus();
+  void reallocate(float posH, float posV) {
+    positionH = posH;
+    positionV = posV;
+  }
 
-  /* Relative box movements */
-  void move();
+  boolean clickedStatus() {
+    active = !active;
+    if (active)
+      transparency = 255;
+    else transparency = 150;
+
+    float time = millis();
+    while (millis ()-time < 200) {
+    }
+    return active;
+  }
+
+  boolean overTheBox () {
+    if (  mouseX > positionHmov && mouseX < positionHmov + boxWidth &&
+      mouseY > positionVmov && mouseY < positionVmov + boxHeight ) {
+      return true;
+    }
+    else return false;
+  }
+
+  void move() {
+    positionHmov += 0.1*(positionH - positionHmov);
+    positionVmov += 0.1*(positionV - positionVmov);
+  }
+
+  void setAvailable() {
+    available = true;
+    drawBoxes();
+  }
+
+  void setUnavailable() {
+    available = false;
+    drawBoxes();
+  }
+
+  boolean getAvailable() {
+    return available;
+  }
+
+  boolean getUsed() {
+    return used;
+  }
+
+  void setUsed() {
+    used = true;
+  }
+
+  void setUnused() {
+    used = false;
+  }
+
+  
+  String getKey() {
+    return keyword;
+  }
 }
 
+class BoxCommand extends Box {
 
-//
-//class BoxSongs extends Box {
-//}
-//
-//class BoxSongsList extends Box {
-//}
-class BoxCommand implements Box {
-  int[] frameColor = new int[3];
-  int[] fillColor = new int[3];
-  int[] fontColor = new int[3];
-  float fontSize;
-  String keyword;
-  float boxWidth, boxHeight; 
-  float positionH, positionV; 
-  float positionHmov, positionVmov;
-  float cornerRadius = 5; 
-  boolean active = false;
-  float transparency = 150;
-  String[] blockedWords;
-  boolean blockedStatus = false;
-  int[] type;
   BoxCommand next = null;
-  
-    /* Constructor */
-//  Box(String keyw, float posH, float posV, float fontSizeR, 
-//  int[] frameC, int[] fillC, int[] fontC);
+  //boolean available = true;
 
-  BoxCommand(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] fillC, int[] fontC){
-    keyword = keyw;
-    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
-    boxHeight = fontSizeR * 1.5;
-    positionH = positionHmov = posH;
-    positionV = positionVmov = posV;
-    fontSize = fontSizeR;
-    frameColor = frameC;
-    fillColor = fillC;
-    fontColor = fontC;
+  /* Constructor */
+  BoxCommand(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
   }
 
-  void drawBoxes(){
-    strokeWeight(2);
-    stroke(frameColor[0], frameColor[1], frameColor[2]);
-    
-    fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
-    fill(fontColor[0], fontColor[1], fontColor[2], transparency);
-    //    textSize(fontSize); // uncomment this for custom fontSize
-    text(keyword, positionHmov, positionVmov+4, boxWidth, boxHeight);
-//    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);  
-  }
-  
-  void reallocate(float posH, float posV) {
-    positionH = posH;
-    positionV = posV;
-  }
 
-  boolean clickedStatus() {
-    active = !active;
-    if (active)
-      transparency = 255;
-    else transparency = 150;
-
-    float time = millis();
-    while (millis()-time < 200) {
-    }
-    return active;
+  String getKey(BoxCommand c) {
+    return c.keyword;
   }
-  
-  void move() {
-    positionHmov += 0.1*(positionH - positionHmov);
-    positionVmov += 0.1*(positionV - positionVmov);
-  }
-
 }
-class BoxItem implements Box {
-  int[] frameColor = new int[3];
-  int[] fillColor = new int[3];
-  int[] fontColor = new int[3];
-  float fontSize;
-  String keyword;
-  float boxWidth, boxHeight; 
-  float positionH, positionV; 
-  float positionHmov, positionVmov;
-  float cornerRadius = 5; 
-  boolean active = false;
-  float transparency = 150;
-  String[] blockedWords;
-  boolean blockedStatus = false;
-  int[] type;
+
+class BoxItem extends Box {
+
+  //boolean available = false;
   BoxItem next = null;
-  
-    /* Constructor */
-//  Box(String keyw, float posH, float posV, float fontSizeR, 
-//  int[] frameC, int[] fillC, int[] fontC);
 
-  BoxItem(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] fillC, int[] fontC){
-    keyword = keyw;
-    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
-    boxHeight = fontSizeR * 1.5;
-    positionH = positionHmov = posH;
-    positionV = positionVmov = posV;
-    fontSize = fontSizeR;
-    frameColor = frameC;
-    fillColor = fillC;
-    fontColor = fontC;
-  }
-
-  void drawBoxes(){
-    strokeWeight(2);
-    stroke(frameColor[0], frameColor[1], frameColor[2]);
-    
-    fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
-    fill(fontColor[0], fontColor[1], fontColor[2], transparency);
-    //    textSize(fontSize); // uncomment this for custom fontSize
-    text(keyword, positionHmov, positionVmov+4, boxWidth, boxHeight);
-//    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);  
+  /* Constructor */
+  BoxItem(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
   }
   
-  void reallocate(float posH, float posV) {
-    positionH = posH;
-    positionV = posV;
-  }
-
-  boolean clickedStatus() {
-    active = !active;
-    if (active)
-      transparency = 255;
-    else transparency = 150;
-
-    float time = millis();
-    while (millis()-time < 200) {
-    }
-    return active;
-  }
-  
-  void move() {
-    positionHmov += 0.1*(positionH - positionHmov);
-    positionVmov += 0.1*(positionV - positionVmov);
-  }
-
 }
-class BoxOption implements Box {
-  int[] frameColor = new int[3];
-  int[] fillColor = new int[3];
-  int[] fontColor = new int[3];
-  float fontSize;
-  String keyword;
-  float boxWidth, boxHeight; 
-  float positionH, positionV; 
-  float positionHmov, positionVmov;
-  float cornerRadius = 5; 
-  boolean active = false;
-  float transparency = 150;
-  String[] blockedWords;
-  boolean blockedStatus = false;
-  int[] type;
+
+class BoxOption extends Box {
+
+  //boolean available = false;
   BoxOption next = null;
-  
-    /* Constructor */
-//  Box(String keyw, float posH, float posV, float fontSizeR, 
-//  int[] frameC, int[] fillC, int[] fontC);
 
-  BoxOption(String keyw, float posH, float posV, float fontSizeR, int[] frameC, int[] fillC, int[] fontC){
-    keyword = keyw;
-    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
-    boxHeight = fontSizeR * 1.5;
-    positionH = positionHmov = posH;
-    positionV = positionVmov = posV;
-    fontSize = fontSizeR;
-    frameColor = frameC;
-    fillColor = fillC;
-    fontColor = fontC;
-  }
-
-  void drawBoxes(){
-    strokeWeight(2);
-    stroke(frameColor[0], frameColor[1], frameColor[2]);
-    
-    fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
-    fill(fontColor[0], fontColor[1], fontColor[2], transparency);
-    //    textSize(fontSize); // uncomment this for custom fontSize
-    text(keyword, positionHmov, positionVmov+4, boxWidth, boxHeight);
-//    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);  
+  /* Constructor */
+  BoxOption(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
   }
   
-  void reallocate(float posH, float posV) {
-    positionH = posH;
-    positionV = posV;
-  }
-
-  boolean clickedStatus() {
-    active = !active;
-    if (active)
-      transparency = 255;
-    else transparency = 150;
-
-    float time = millis();
-    while (millis()-time < 200) {
-    }
-    return active;
-  }
-  
-  void move() {
-    positionHmov += 0.1*(positionH - positionHmov);
-    positionVmov += 0.1*(positionV - positionVmov);
-  }
 
 }
+
 

@@ -9,13 +9,8 @@ import java.util.List;
 /* General page settings */
 int screenWidth = 600, screenHeight = 400;
 
-/* Boxes colors */
-int[] frameColor = new int[3];
-int[] activeFrameColor = new int[3];
-int[] fillColor = new int[3];
-
 /* Fonts */
-int[] fontColor = new int[3];
+//int[] fontColor = new int[3];
 float fontSizeRef = 15;
 
 /* Boxes general settings */
@@ -63,32 +58,19 @@ void setup() {
   textSize(fontSizeRef);
   textAlign(CENTER);
 
-  /* Color setup */
-  // There must be a better way to set this
-  frameColor[0] = 118; 
-  frameColor[1] = 118; 
-  frameColor[2] = 118;
-  activeFrameColor[0] = 0; 
-  activeFrameColor[1] = 255; 
-  activeFrameColor[2] = 0;
-  fillColor[0] = 201; 
-  fillColor[1] = 102; 
-  fillColor[2] = 10;
-  fontColor[0] = 0; 
-  fontColor[1] = 0; 
-  fontColor[2] = 0;
-
   /* Creates a few boxes at the corner*/
   for (int w = 0; w < cwords.length; w++) {
-    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
+    cboxes[w] = new BoxCommand(cwords[w], 0, 0, fontSizeRef);
   }
   
   for (int w = 0; w < iwords.length; w++) {
-    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
+    iboxes[w] = new BoxItem(iwords[w], 0, 0, fontSizeRef);
+    iboxes[w].setUnavailable();
   }
 
   for (int w = 0; w < owords.length; w++) {
-    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef, frameColor, activeFrameColor, fillColor, fontColor);
+    oboxes[w] = new BoxOption(owords[w], 0, 0, fontSizeRef);
+    oboxes[w].setUnavailable();
   }
 
   /* Reallocate boxes from the corner */
