@@ -116,35 +116,42 @@ class Box {
     return status;
   }
 
-
-  //  void setActive() {
-  //    
-  //    active = true;
-  //  }
-  //  void setInActive() {
-  //    active = false;
-  //    used = false;
-  //  }
-  //  boolean isActive() {
-  //    return active;
-  //  }
-  //
-  //  boolean isUsed() {
-  //    return used;
-  //  }
-  //  void setUsed() {
-  //    used = true;
-  //  }
-  //  void setUnUsed() {
-  //    used = false;
-  //  }
-
-  //  void setUnused() {
-  //    used = false;
-  //  }
-
   String getKey() {
     return keyword;
   }
 }
+
+class BoxCommand extends Box {
+
+  BoxCommand next = null;
+
+  /* Constructor */
+  BoxCommand(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
+  }
+
+}
+
+class BoxItem extends Box {
+
+  BoxItem next = null;
+
+  /* Constructor */
+  BoxItem(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
+  }
+  
+}
+
+class BoxOption extends Box {
+
+  BoxOption next = null;
+
+  /* Constructor */
+  BoxOption(String keyw, float posH, float posV, float fontSizeR) {
+    super(keyw, posH, posV, fontSizeR);
+  }
+
+}
+
 

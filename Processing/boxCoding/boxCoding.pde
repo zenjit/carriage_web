@@ -10,7 +10,6 @@ import java.util.List;
 int screenWidth = 600, screenHeight = 400;
 
 /* Fonts */
-//int[] fontColor = new int[3];
 float fontSizeRef = 15;
 
 /* Boxes general settings */
@@ -106,42 +105,21 @@ void draw() {
 }
 
 void actionHandler () {
+
   /* control boxes */
   for (BoxCommand c: cboxes) {
     if (c.isClicked()) {
+      /* status used */
       if (c.getStatus() == 3) {
-        removeBoxCommand(c);
-        for (BoxCommand cc: cboxes) {
-          cc.setStatus(1);
-        }
-        for (BoxItem i: iboxes) {
-          if (i.getStatus() == 3) {
-            removeBoxItem(i);
-          }
-          i.setStatus(2);
-        }
-        for (BoxOption o: oboxes) {
-          if (o.getStatus() == 3) {
-            removeBoxOption(o);
-          }
-          o.setStatus(2);
-        }
+        removeCommandAndRelocateBoxes(c);
       }
+      /* status active */
       else if (c.getStatus() == 1) {
-        //          if (c.getKey() == "random") { 
-        //            randomSentence(); 
-        //            break;
-        //          }
-        for (BoxCommand cc: cboxes) {
-          cc.setStatus(2);
+        if (c.getKey() == "random") { 
+          randomSentence(); 
+          break;
         }
-        for (BoxItem i: iboxes) {
-          i.setStatus(1);
-        }
-        for (BoxOption o: oboxes) {
-          o.setStatus(2);
-        }
-        insertBoxCommand(c);
+        insertCommandAndRelocateBoxes(c);
       }
     }
   }
@@ -149,74 +127,13 @@ void actionHandler () {
   /* item boxes */
   for (BoxItem i: iboxes) {
     if (i.isClicked()) {
+      /* status used */
       if (i.getStatus() == 3) {
-        removeBoxItem(i);
-        if (i.getKey() == allsongsKey) {
-          for (BoxOption o: oboxes) {
-            if (o.getStatus() == 3)
-              removeBoxOption(o);
-          }
-          i.setStatus(1);
-          for (BoxItem ii: iboxes)
-            ii.setStatus(1);
-          for (BoxOption o: oboxes)
-            o.setStatus(2);
-        }
-        else {
-          nSongs--;
-          if (nSongs == 0) {
-            for (BoxOption o: oboxes) {
-              if (o.getStatus() == 3) {
-                removeBoxOption(o);
-              }
-              o.setStatus(2);
-            }
-            for (BoxItem ii: iboxes)
-              if (ii.getKey() == allsongsKey)
-                ii.setStatus(1);
-          }
-          if (nSongs <= 1) {
-            for (BoxOption o: oboxes)
-              if (o.getKey() == shuffleKey) {
-                if (o.getStatus() == 3) {
-                  removeBoxOption(o);
-                }
-                o.setStatus(2);
-              }
-          }
-        }
+        removeItemAndRelocateBoxes(i);
       } 
+      /* status active */
       else if (i.getStatus() == 1) {
-        //          if (c.getKey() == "random") { 
-        //            randomSentence(); 
-        //            break;
-        //          }
-        if (i.getKey() == allsongsKey) {
-          for (BoxItem ii: iboxes) {
-            ii.setStatus(2);
-          }
-          i.setStatus(3);
-          for (BoxOption o: oboxes)
-            o.setStatus(1);
-        }
-        else {
-          nSongs++;
-          for (BoxItem ii: iboxes)
-            if (ii.getKey() == allsongsKey)
-              ii.setStatus(2);
-          if (nSongs == 1) {
-            for (BoxOption o: oboxes)
-              if (o.getKey() == shuffleKey)
-                o.setStatus(2);
-              else o.setStatus(1);
-          } 
-          else {
-            for (BoxOption o: oboxes)
-              if (o.getKey() == shuffleKey)
-                o.setStatus(1);
-          }
-        }
-        insertBoxItem(i);
+        insertItemAndRelocateBoxes(i);
       }
     }
   }
@@ -224,13 +141,11 @@ void actionHandler () {
   /* option boxes */
   for (BoxOption o: oboxes) {
     if (o.isClicked()) {
-      if (o.getStatus() == 1) {
-        o.setStatus(3);
-        insertBoxOption(o);
+      if (o.getStatus() == 3) {
+        removeOptionAndRelocateBoxes(o);
       }
-      else {
-        removeBoxOption(o);
-        o.setStatus(1);
+      else if (o.getStatus() == 1) {
+        insertOptionAndRelocateBoxes(o);
       }
     }
   }
@@ -266,7 +181,7 @@ void relocateBoxes() {
       posHCounterI += i.boxWidth + boxHorizontalGap;
     }
   }
- 
+
   posHCounterO = marginLeftRightO;
   posVCounterO = posVCounterI + iboxes[0].boxHeight + boxVerticalGap+10;
 
@@ -331,132 +246,62 @@ void relocateBoxes() {
 }
 
 void randomSentence() {
-  int unodue = (int)abs(random (0, 2)); // random between play and repeat
-  insertBoxCommand(cboxes[unodue]);
-  relocateBoxes();
-  int songs = (int)abs(random (0, 2)); // random between all songs and song list
+  int unodue = (int)(random (0, 2)); // random between play and repeat
+  insertCommandAndRelocateBoxes(cboxes[unodue]);
+
+  int songs = (int)(random (0, 2)); // random between all songs and song list
   if (songs == 1) {
-    int nsongs = (int)abs(random (0, 6));
+    generateRandomSongList();
   }
   else {
-    insertBoxItem(iboxes[0]);
+    insertItemAndRelocateBoxes(iboxes[0]);
   }
-  int options = (int)abs(random (0, 2));
-  //  for (BoxControl c: cboxes) {
-  //  }
-  //  for (BoxItem i: iboxes) {
-  //  }
-  //  for (BoxOption o: oboxes) {
-  //  }
-  println(unodue);
+
+  int options = (int)(random (0, 3)); // random number of options
+  if (options == 1) {
+    int whichOption = (int)(random (0, 2)); // random between play and repeat
+    insertOptionAndRelocateBoxes(oboxes[whichOption]);
+  }
+  else if (options == 2) { // both options
+    insertOptionAndRelocateBoxes(oboxes[0]);
+    insertOptionAndRelocateBoxes(oboxes[1]);
+  }
 }
-void insertBoxCommand(BoxCommand aBox) {
-  aBox.setStatus(3);
-  if (bcHead == null) {
-    bcHead = aBox;
-  } 
-  else {
-    BoxCommand bPointer = bcHead; 
-    while (bPointer.next != null)
+
+void generateRandomSongList() {
+  boolean isFirstOccurrence = false;
+  int songNumber, count = 0;
+  int numberOfSongs = (int)(random (1, 6));
+  int[] rndsongs = new int[numberOfSongs];
+
+  println(numberOfSongs);
+
+  do {
+    isFirstOccurrence = true;
+    // get random song
+    songNumber = (int)(random(0, 6));
+
+    // if the song number already exists in the array
+    for (int i = 0; i < rndsongs.length; i++)
     {
-      bPointer = bPointer.next;
+      if (rndsongs[i] == songNumber)
+        isFirstOccurrence = false;
     }
-    bPointer.next = aBox;
-  }
-}
-
-void insertBoxItem(BoxItem aBox) {
-  aBox.setStatus(3);
-  if (biHead == null) {
-    biHead = aBox;
-  } 
-  else {
-    BoxItem bPointer = biHead; 
-    while (bPointer.next != null)
+    if (isFirstOccurrence)
     {
-      bPointer = bPointer.next;
+      rndsongs[count] = songNumber;
+      count++;
     }
-    bPointer.next = aBox;
+  }
+  while (count < numberOfSongs);
+
+  for (int r =0; r < rndsongs.length; r++) {
+    println(rndsongs[r]);
+    insertItemAndRelocateBoxes(iboxes[rndsongs[r]]);
   }
 }
 
-void insertBoxOption(BoxOption aBox) {
-  aBox.setStatus(3);
-  if (boHead == null) {
-    boHead = aBox;
-  } 
-  else {
-    BoxOption bPointer = boHead; 
-    while (bPointer.next != null)
-    {
-      bPointer = bPointer.next;
-    }
-    bPointer.next = aBox;
-  }
-}
 
-void removeBoxCommand(BoxCommand aBox) {
-  if (aBox.getStatus() == 3) {
-    aBox.setStatus(1);
-    BoxCommand aPointer;
-    if (aBox.equals(bcHead)) {
-      aPointer = bcHead;
-      bcHead = bcHead.next;
-      aPointer.next = null;
-    }
-    else {
-      BoxCommand bPointer = bcHead;
-      while (!aBox.equals (bPointer.next)) {
-        bPointer = bPointer.next;
-      }
-      aPointer = bPointer.next;
-      bPointer.next = bPointer.next.next;
-      aPointer.next = null;
-    }
-  }
-}
-
-void removeBoxItem(BoxItem aBox) {
-  if (aBox.getStatus() == 3) {
-    aBox.setStatus(1);
-    BoxItem aPointer;
-    if (aBox.equals(biHead)) {
-      aPointer = biHead;
-      biHead = biHead.next;
-      aPointer.next = null;
-    }
-    else {
-      BoxItem bPointer = biHead;
-      while (!aBox.equals (bPointer.next)) {
-        bPointer = bPointer.next;
-      }
-      aPointer = bPointer.next;
-      bPointer.next = bPointer.next.next;
-      aPointer.next = null;
-    }
-  }
-}
-
-void removeBoxOption(BoxOption aBox) {
-  if (aBox.getStatus() == 3) {
-    aBox.setStatus(1);
-    BoxOption aPointer;
-    if (aBox.equals(boHead)) {
-      aPointer = boHead;
-      boHead = boHead.next;
-      aPointer.next = null;
-    }
-    else {
-      BoxOption bPointer = boHead;
-      while (!aBox.equals (bPointer.next)) {
-        bPointer = bPointer.next;
-      }
-      aPointer = bPointer.next;
-      bPointer.next = bPointer.next.next;
-      aPointer.next = null;
-    }
-  }
-}
 
 List<String> giveMeMySentence() {
   return sentence;
