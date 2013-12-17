@@ -8,9 +8,5 @@ class BoxCommand extends Box {
     super(keyw, posH, posV, fontSizeR);
   }
 
-
-  String getKey(BoxCommand c) {
-    return c.keyword;
-  }
 }
 

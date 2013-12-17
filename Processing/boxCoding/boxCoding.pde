@@ -25,6 +25,7 @@ float posHCounterC, posHCounterI, posHCounterO;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
+int nsongs, i = 0;
 
 /* Command Boxes  */
 String[] cwords = {
@@ -73,117 +74,14 @@ void setup() {
     oboxes[w].setUnavailable();
   }
 
-  /* Reallocate boxes from the corner */
+  /* Rellocate boxes from the corner */
   relocateBoxes();
 }
 
 void draw() {
   /* mouse event detected on boxes*/
   if (mousePressed) {
-    /* control boxes */
-    for (BoxCommand c: cboxes) {
-      if (c.getAvailable() || c.getUsed()) {
-        /* mouse event detected on control box */
-        if (c.overTheBox()) {
-          /* command box to be used */
-          if (c.clickedStatus()) {
-            insertCommandBox(c);
-            for (BoxCommand d: cboxes) {
-              d.setUnavailable();
-            }
-            for (BoxItem i: iboxes) {
-              i.setAvailable();
-            }
-          }
-          /* already used command box */
-          else {
-            removeCommandBox(c);
-            for (BoxCommand d: cboxes) {
-              d.setAvailable();
-            }
-            for (BoxItem i: iboxes) {
-              i.setUnavailable();
-            }
-            for (BoxOption o: oboxes) {
-              o.setUnavailable();
-            }
-          }
-          relocateBoxes();
-        }
-      }
-    }
-    /* item boxes */
-    for (BoxItem i: iboxes) {
-      if (i.getAvailable() || i.getUsed()) {
-        /* mouse event detected on item box */
-        if (i.overTheBox()) {
-          /* item box to be used */
-          if (i.clickedStatus()) {
-            /* if all songs has been selected */
-            if (i.getKey() == "all songs") {
-              insertItemBox(i);
-              for (BoxItem h: iboxes) {
-                h.setUnavailable();
-              }
-              for (BoxOption o: oboxes) {
-                o.setAvailable();
-              }
-            }
-            /* ...or a single track */
-            else {
-              insertItemBox(i);
-              i.setUnavailable();
-              for (BoxItem h: iboxes) {
-                if (h.getKey() == "all songs") {
-                  h.setUnavailable();
-                }
-              }
-              for (BoxOption o: oboxes) {
-                o.setAvailable();
-              }
-            }
-          }
-          /* already used item box */
-          else {
-            removeItemBox(i);
-            if (i.getKey() == "all songs") {
-              for (BoxItem h: iboxes) {
-                h.setAvailable();
-              }
-              for (BoxOption o: oboxes) {
-                o.setUnavailable();
-              }
-            }
-            else {
-              for (BoxItem h: iboxes) {
-                h.setAvailable();
-              }
-              for (BoxOption o: oboxes) {
-                o.setUnavailable();
-              }
-            }
-          }
-          relocateBoxes();
-        }
-      }
-    }
-    /* option boxes */
-    for (BoxOption o: oboxes) {
-      if (o.getAvailable() || o.getUsed()) {
-        /* mouse event detected on option box */
-        if (o.overTheBox()) {
-          /* option box to be used */
-          if (o.clickedStatus()) {
-            insertOptionBox(o);
-          } 
-          /* already used option box */
-          else {
-            removeOptionBox(o);
-          }
-          relocateBoxes();
-        }
-      }
-    }
+    actionHandler();
   }
 
   /* moves boxes */
@@ -210,6 +108,140 @@ void draw() {
   }  
   for (BoxOption o: oboxes) {
     o.drawBoxes();
+  }
+}
+
+void actionHandler () {
+  /* control boxes */
+  for (BoxCommand c: cboxes) {
+    if (c.getAvailable() || c.getUsed()) {
+      /* mouse event detected on control box */
+      if (c.overTheBox()) {
+        /* command box to be used */
+        if (c.clickedStatus()) {
+          if (c.getKey() == "random") { randomSentence(); break; }
+          insertCommandBox(c);
+          for (BoxCommand d: cboxes) {
+            d.setUnavailable();
+          }
+          for (BoxItem i: iboxes) {
+            i.setAvailable();
+          }
+        }
+        /* already used command box */
+        else {
+          removeCommandBox(c);
+          for (BoxCommand d: cboxes) {
+            d.setAvailable();
+          }
+          for (BoxItem i: iboxes) {
+            i.setUnavailable();
+          }
+          for (BoxOption o: oboxes) {
+            o.setUnavailable();
+          }
+        }
+        relocateBoxes();
+      }
+    }
+  }
+  /* item boxes */
+  for (BoxItem i: iboxes) {
+    if (i.getAvailable() || i.getUsed()) {
+      /* mouse event detected on item box */
+      if (i.overTheBox()) {
+        /* item box to be used */
+        if (i.clickedStatus()) {
+          /* if all songs has been selected */
+          if (i.getKey() == "all songs") {
+            insertItemBox(i);
+            for (BoxItem h: iboxes) {
+              h.setUnavailable();
+            }
+            for (BoxOption o: oboxes) {
+              o.setAvailable();
+            }
+          }
+          /* ...or a single track */
+          else {
+            insertItemBox(i);
+            nsongs ++;
+            println(nsongs);
+            i.setUnavailable();
+            for (BoxItem h: iboxes) {
+              if (h.getKey() == "all songs") {
+                h.setUnavailable();
+              }
+            }
+            if (nsongs == 1)
+            {
+              for (BoxOption o: oboxes) {
+                if (o.getKey() == "volume") o.setAvailable();
+              }
+            }
+            else {
+              for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }              
+            }
+          }
+        }
+        /* already used item box */
+        else {
+          String item = i.getKey();
+          println (item);
+          if (item == "all songs") {
+            removeItemBox(i);
+            for (BoxItem h: iboxes) {
+              h.setAvailable();
+            }
+            for (BoxOption o: oboxes) {
+              o.setUnavailable();
+            }
+          }
+          else {
+            removeItemBox(i);
+            nsongs--;
+            println(nsongs);
+            if (nsongs == 0) {
+              for (BoxItem h: iboxes) {
+                h.setAvailable();
+              }
+              for (BoxOption o: oboxes) {
+                println("here");
+                o.setUnavailable();
+              }                
+            }
+            if (nsongs == 1) {
+              
+            }
+            else {
+                for (BoxOption o: oboxes) {
+                o.setAvailable();
+              }      
+            }
+          }
+        }
+        relocateBoxes();
+      }
+    }
+  }
+  /* option boxes */
+  for (BoxOption o: oboxes) {
+    if (o.getAvailable() || o.getUsed()) {
+      /* mouse event detected on option box */
+      if (o.overTheBox()) {
+        /* option box to be used */
+        if (o.clickedStatus()) {
+          insertOptionBox(o);
+        } 
+        /* already used option box */
+        else {
+          removeOptionBox(o);
+        }
+        relocateBoxes();
+      }
+    }
   }
 }
 
@@ -302,6 +334,26 @@ void relocateBoxes() {
   println();
 }
 
+void randomSentence() {
+  int unodue = (int)abs(random (0, 2)); // random between play and repeat
+  insertCommandBox(cboxes[unodue]);
+  relocateBoxes();
+  int songs = (int)abs(random (0, 2)); // random between all songs and song list
+  if (songs == 1) {
+    int nsongs = (int)abs(random (0, 6));
+    }
+  else {
+    insertItemBox(iboxes[0]);
+  }
+  int options = (int)abs(random (0, 2));
+//  for (BoxControl c: cboxes) {
+//  }
+//  for (BoxItem i: iboxes) {
+//  }
+//  for (BoxOption o: oboxes) {
+//  }
+  println(unodue);
+}
 void insertCommandBox(BoxCommand aBox) {
   aBox.used = true;
   if (bcHead == null) {
