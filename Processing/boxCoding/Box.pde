@@ -1,7 +1,9 @@
 class Box {
 
   int[] frameColor = new int[3];
-  int[] frameAColor = new int[3];
+  int[] frameInactiveColor = new int[3];
+  int[] frameActiveColor = new int[3];
+  int[] frameUsedColor = new int[3];
   int[] fillColor = new int[3];
   int[] fontColor = new int[3];
   float fontSize;
@@ -10,22 +12,29 @@ class Box {
   float positionH, positionV; 
   float positionHmov, positionVmov;
   float cornerRadius = 5; 
-  boolean active = false;
+  //  boolean active = true;
+  //  boolean used = false;
+  int status = 1; 
   float transparency = 150;
-  boolean available = true;
-  boolean used = false;
+  Box next = null;
 
   /* Constructor */
   Box(String keyw, float posH, float posV, float fontSizeR) {
     /* Color setup */
     // There must be a better way to set this
-    
-    frameColor[0] = 118; 
-    frameColor[1] = 118; 
-    frameColor[2] = 118;
-    frameAColor[0] = 0; 
-    frameAColor[1] = 255; 
-    frameAColor[2] = 0;
+
+    frameInactiveColor[0] = 118; 
+    frameInactiveColor[1] = 118; 
+    frameInactiveColor[2] = 118;
+    frameActiveColor[0] = 0; 
+    frameActiveColor[1] = 255; 
+    frameActiveColor[2] = 0;
+    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
+    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
+    //    frameUsedColor[0] = 118; 
+    //    frameUsedColor[1] = 118; 
+    //    frameUsedColor[2] = 118;
+    //    frameColor = frameActiveColor;
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
@@ -44,13 +53,9 @@ class Box {
   }
 
   /* Draws box */
-  void drawBoxes() {
+  void drawBox() {
     strokeWeight(2);
-    if (available == true) {
-      stroke(frameAColor[0], frameAColor[1], frameAColor[2]);
-    }
-    else stroke(frameColor[0], frameColor[1], frameColor[2]);
-    
+    stroke(frameColor[0], frameColor[1], frameColor[2]);    
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
     rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
@@ -65,21 +70,34 @@ class Box {
     positionV = posV;
   }
 
-  boolean clickedStatus() {
-    active = !active;
-    if (active)
+  void updateColors() {
+    if (status == 3) {
+      arraycopy(frameUsedColor, 0, frameColor, 0, frameUsedColor.length);
       transparency = 255;
-    else transparency = 150;
-
-    float time = millis();
-    while (millis ()-time < 200) {
+    } 
+    else if (status == 1) {
+      arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
+      transparency = 150;
+    } 
+    else {
+      arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
+      transparency = 150;
     }
-    return active;
+    //    active = !active;
+    //    if (!active)
+    //      used = !used;
   }
 
-  boolean overTheBox () {
+  boolean isClicked () {
     if (  mouseX > positionHmov && mouseX < positionHmov + boxWidth &&
       mouseY > positionVmov && mouseY < positionVmov + boxHeight ) {
+      
+        updateColors();
+        
+        float time = millis();
+      while (millis ()-time < 200) {
+      }
+
       return true;
     }
     else return false;
@@ -90,33 +108,41 @@ class Box {
     positionVmov += 0.1*(positionV - positionVmov);
   }
 
-  void setAvailable() {
-    available = true;
-    drawBoxes();
+  void setStatus(int stat) {
+    status = stat;
+    updateColors();
+  }
+  int getStatus() {
+    return status;
   }
 
-  void setUnavailable() {
-    available = false;
-    drawBoxes();
-  }
 
-  boolean getAvailable() {
-    return available;
-  }
+  //  void setActive() {
+  //    
+  //    active = true;
+  //  }
+  //  void setInActive() {
+  //    active = false;
+  //    used = false;
+  //  }
+  //  boolean isActive() {
+  //    return active;
+  //  }
+  //
+  //  boolean isUsed() {
+  //    return used;
+  //  }
+  //  void setUsed() {
+  //    used = true;
+  //  }
+  //  void setUnUsed() {
+  //    used = false;
+  //  }
 
-  boolean getUsed() {
-    return used;
-  }
+  //  void setUnused() {
+  //    used = false;
+  //  }
 
-  void setUsed() {
-    used = true;
-  }
-
-  void setUnused() {
-    used = false;
-  }
-
-  
   String getKey() {
     return keyword;
   }

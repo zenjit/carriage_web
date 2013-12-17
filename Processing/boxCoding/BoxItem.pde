@@ -1,6 +1,5 @@
 class BoxItem extends Box {
 
-  //boolean available = false;
   BoxItem next = null;
 
   /* Constructor */
