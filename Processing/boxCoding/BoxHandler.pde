@@ -8,6 +8,7 @@ void removeCommandAndRelocateBoxes (BoxCommand c) {
       removeBoxItem(i);
     }
     i.setStatus(2);
+    nSongs = 0;
   }
   for (BoxOption o: oboxes) {
     if (o.getStatus() == 3) {
@@ -45,6 +46,7 @@ void removeItemAndRelocateBoxes (BoxItem i) {
   }
   else {
     nSongs--;
+    println("removed: " + nSongs);
     if (nSongs == 0) {
       for (BoxOption o: oboxes) {
         if (o.getStatus() == 3) {
@@ -79,6 +81,7 @@ void insertItemAndRelocateBoxes (BoxItem i) {
   }
   else {
     nSongs++;
+    println("added: " + nSongs);
     for (BoxItem ii: iboxes)
       if (ii.getKey() == allsongsKey)
         ii.setStatus(2);
