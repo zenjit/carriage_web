@@ -16,6 +16,12 @@ class Box {
   //  boolean used = false;
   int status = 1; 
   float transparency = 150;
+  String openParenthesis = "";
+  String closedParenthesis = "";
+  String openBrackets = "";
+  String closedBrackets = "";
+  String comma = "";
+  float transpSymbol = 0;
   Box next = null;
 
   /* Constructor */
@@ -31,10 +37,6 @@ class Box {
     frameActiveColor[2] = 0;
     arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
     arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
-    //    frameUsedColor[0] = 118; 
-    //    frameUsedColor[1] = 118; 
-    //    frameUsedColor[2] = 118;
-    //    frameColor = frameActiveColor;
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
@@ -60,7 +62,15 @@ class Box {
     rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //    textSize(fontSize); // uncomment this for custom fontSize
-    text(keyword, positionHmov, positionVmov+4, boxWidth, boxHeight);
+    text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
+    //    fill(0,0,0, transpSymbol);
+    //fill(255,255,255);
+    // open parenthesis between command and items,
+    text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHCounterSentence, positionV + 2, punctuationGapLR, boxHeight);
+    text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
+    text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
+    text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight); 
     //    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);
   }
 
@@ -91,10 +101,10 @@ class Box {
   boolean isClicked () {
     if (  mouseX > positionHmov && mouseX < positionHmov + boxWidth &&
       mouseY > positionVmov && mouseY < positionVmov + boxHeight ) {
-      
-        updateColors();
-        
-        float time = millis();
+
+      updateColors();
+
+      float time = millis();
       while (millis ()-time < 200) {
       }
 
@@ -104,6 +114,8 @@ class Box {
   }
 
   void move() {
+    // bool drawSymbol is true when positionH - positionHmov && positionV - positionVmov < 0.1?
+    transpSymbol = min(255, transpSymbol+0.01);
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
   }
@@ -112,6 +124,7 @@ class Box {
     status = stat;
     updateColors();
   }
+  
   int getStatus() {
     return status;
   }
@@ -129,7 +142,6 @@ class BoxCommand extends Box {
   BoxCommand(String keyw, float posH, float posV, float fontSizeR) {
     super(keyw, posH, posV, fontSizeR);
   }
-
 }
 
 class BoxItem extends Box {
@@ -140,7 +152,6 @@ class BoxItem extends Box {
   BoxItem(String keyw, float posH, float posV, float fontSizeR) {
     super(keyw, posH, posV, fontSizeR);
   }
-  
 }
 
 class BoxOption extends Box {
@@ -151,7 +162,5 @@ class BoxOption extends Box {
   BoxOption(String keyw, float posH, float posV, float fontSizeR) {
     super(keyw, posH, posV, fontSizeR);
   }
-
 }
-
 

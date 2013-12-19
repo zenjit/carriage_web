@@ -13,14 +13,16 @@ int screenWidth = 600, screenHeight = 400;
 float fontSizeRef = 15;
 
 /* Boxes general settings */
-float boxHorizontalGap = 10, boxVerticalGap = 10;
+float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
 float delta = 10;
-float marginLeftRightC = 10, marginTopC = delta;
-float marginLeftRightI = 10, marginTopI = fontSizeRef * 2.5 + 10;
-float marginLeftRightO = 10, marginTopO = fontSizeRef * 5 + 10;
+float marginLeftRight = delta;
+float marginTopC = delta;
+float marginTopI = fontSizeRef * 2.5 + 10;
+float marginTopO = fontSizeRef * 5 + 10;
+public float punctuationGapLR = boxHorizontalGapCommandLine;
 
 /* Some counters */
-float posHCounterC, posHCounterI, posHCounterO;
+float posHCounter;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
@@ -32,7 +34,7 @@ String[] cwords = {
 };
 
 /* Items Boxes  */
-String allsongsKey = "all songs";
+String allsongsKey = "all_songs";
 String[] iwords = {
   allsongsKey, "1", "2", "3", "4", "5"
 };
@@ -43,12 +45,21 @@ String[] owords = {
   "volume", shuffleKey
 };
 
+/* Punctuation */
+char parOpen = '(';
+char parClosed = ')';
+char bracketOpen = '[';
+char bracketClosed = ']';
+char comma = ',';
+
 BoxCommand[] cboxes = new BoxCommand[cwords.length];
 BoxItem[] iboxes = new BoxItem[iwords.length];
+BoxItem[] songList = new BoxItem[5];
 BoxOption[] oboxes = new BoxOption[owords.length];
 
 BoxCommand bcHead = null;
 BoxItem biHead = null;
+BoxItem songsPlaylistHead = null;
 BoxOption boHead = null;
 
 List<String> sentence;
@@ -89,7 +100,8 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRightC/2, screenHeight/2, width-marginLeftRightC, screenHeight/2-marginTopC, 5);
+  rect(marginLeftRight/2, screenHeight/2, width-marginLeftRight, screenHeight/2-marginTopC, 5);
+
   for (BoxCommand c: cboxes) {
     c.move();
     c.drawBox();
@@ -151,98 +163,6 @@ void actionHandler () {
   }
 
   relocateBoxes();
-}
-
-void relocateBoxes() {
-  posHCounterC = marginLeftRightC;
-  posVCounterC = marginTopC;
-
-  for (BoxCommand c: cboxes) {
-    if (c.getStatus() != 3) {
-      if (posHCounterC + c.boxWidth > width - marginLeftRightC) {
-        posHCounterC = marginLeftRightC;
-        posVCounterC += c.boxHeight + boxVerticalGap;
-      }
-      c.reallocate(posHCounterC, posVCounterC);
-      posHCounterC += c.boxWidth + boxHorizontalGap;
-    }
-  }
-
-  posHCounterI = marginLeftRightI;
-  posVCounterI = posVCounterC + cboxes[0].boxHeight + boxVerticalGap+10;
-
-  for (BoxItem i: iboxes) {
-    if (i.getStatus() != 3) {
-      if (posHCounterI + i.boxWidth > width - marginLeftRightI) {
-        posHCounterI = marginLeftRightI;
-        posVCounterI += i.boxHeight + boxVerticalGap;
-      }
-      i.reallocate(posHCounterI, posVCounterI);
-      posHCounterI += i.boxWidth + boxHorizontalGap;
-    }
-  }
-
-  posHCounterO = marginLeftRightO;
-  posVCounterO = posVCounterI + iboxes[0].boxHeight + boxVerticalGap+10;
-
-
-  for (BoxOption o: oboxes) {
-    if (o.getStatus() != 3) {
-      if (posHCounterO + o.boxWidth > width - marginLeftRightO) {
-        posHCounterO = marginLeftRightO;
-        posVCounterO += o.boxHeight + boxVerticalGap;
-      }
-      o.reallocate(posHCounterO, posVCounterO);
-      posHCounterO += o.boxWidth + boxHorizontalGap;
-    }
-  }
-
-  posHCounterSentence = marginLeftRightC;
-  posVCounterSentence = screenHeight/2 + marginTopC;
-
-  BoxCommand bcPointer = bcHead;
-  BoxItem biPointer = biHead;
-  BoxOption boPointer = boHead;
-
-  sentence = new ArrayList<String>();
-
-  while (bcPointer != null) {
-    sentence.add(bcPointer.getKey());
-    if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRightC) {
-      posHCounterSentence = marginLeftRightC;
-      posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
-    }
-    bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    posHCounterSentence += bcPointer.boxWidth + boxHorizontalGap;
-    bcPointer = bcPointer.next;
-  }
-
-  while (biPointer != null) {
-    sentence.add(biPointer.getKey());
-    if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRightC) {
-      posHCounterSentence = marginLeftRightC;
-      posVCounterSentence += biPointer.boxHeight + boxVerticalGap;
-    }
-    biPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    posHCounterSentence += biPointer.boxWidth + boxHorizontalGap;
-    biPointer = biPointer.next;
-  }
-
-  while (boPointer != null) {
-    sentence.add(boPointer.getKey());
-    if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRightC) {
-      posHCounterSentence = marginLeftRightC;
-      posVCounterSentence += boPointer.boxHeight + boxVerticalGap;
-    }
-    boPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    posHCounterSentence += boPointer.boxWidth + boxHorizontalGap;
-    boPointer = boPointer.next;
-  }
-
-  print("Sentence: ");
-  for (String z : sentence)
-    print(z + ' ');
-  println();
 }
 
 void randomSentence() {
