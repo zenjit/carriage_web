@@ -275,7 +275,7 @@ void relocateBoxes() {
 
   sentence = new ArrayList<String>();
 
-  // counters for pun
+  // counters for punctuation marks
   int numCommands = 0;
   int numItems = 0;
   int numOptions = 0;
@@ -307,6 +307,7 @@ void relocateBoxes() {
   String first = "";
   String last = "";
   boolean isFirst = true;
+  
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
@@ -338,9 +339,9 @@ void relocateBoxes() {
     biPointer = biPointer.next;
     isFirst = false;
   }
-  println("len: " + numItems);
-  println("first: " + first);
-  println("last: " + last);
+//  println("len: " + numItems);
+//  println("first: " + first);
+//  println("last: " + last);
 
   if (numItems == 0) {
     for (BoxItem i: iboxes) {

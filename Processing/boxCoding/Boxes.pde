@@ -35,20 +35,22 @@ class Box {
     frameActiveColor[0] = 0; 
     frameActiveColor[1] = 255; 
     frameActiveColor[2] = 0;
-    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
-    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
     fontColor[0] = 0; 
     fontColor[1] = 0; 
     fontColor[2] = 0;
+    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
+    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
+    arraycopy(fillColor, 0, fillColor, 0, fillColor.length );
+    arraycopy(fontColor, 0, fontColor, 0, fontColor.length );
 
     fontSize = fontSizeR;
 
     keyword = keyw;
 
-    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
+    boxWidth = fontSizeR * 0.75 * keyword.length() + 20;
     boxHeight = fontSizeR * 1.5;
     positionH = positionHmov = posH;
     positionV = positionVmov = posV;
@@ -73,7 +75,6 @@ class Box {
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight); 
     //    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);
   }
-
 
   void reallocate(float posH, float posV) {
     positionH = posH;
@@ -124,7 +125,7 @@ class Box {
     status = stat;
     updateColors();
   }
-  
+
   int getStatus() {
     return status;
   }

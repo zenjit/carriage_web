@@ -7,10 +7,10 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 600, screenHeight = 400;
+int screenWidth = 1000, screenHeight = 600;
 
 /* Fonts */
-float fontSizeRef = 15;
+float fontSizeRef = 25;
 
 /* Boxes general settings */
 float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
@@ -66,7 +66,7 @@ List<String> sentence;
 
 void setup() {
   frameRate(30);
-  size(600, 400);
+  size(1000, 600);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
