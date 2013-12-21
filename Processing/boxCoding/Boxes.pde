@@ -65,9 +65,9 @@ class Box {
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //    textSize(fontSize); // uncomment this for custom fontSize
     text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
-    //    fill(0,0,0, transpSymbol);
-    //fill(255,255,255);
+
     // open parenthesis between command and items,
+    fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(closedParenthesis, posHCounterSentence, positionV + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
@@ -89,10 +89,12 @@ class Box {
     else if (status == 1) {
       arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
       transparency = 150;
+      transpSymbol = 0;
     } 
     else {
       arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
       transparency = 150;
+      transpSymbol = 0;
     }
     //    active = !active;
     //    if (!active)
@@ -115,10 +117,10 @@ class Box {
   }
 
   void move() {
-    // bool drawSymbol is true when positionH - positionHmov && positionV - positionVmov < 0.1?
-    transpSymbol = min(255, transpSymbol+0.01);
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
+    if (status == 3 && abs(positionH - positionHmov) < boxHeight && abs(positionV - positionVmov) < boxWidth)
+      transpSymbol = min(255, transpSymbol+10);    
   }
 
   void setStatus(int stat) {
