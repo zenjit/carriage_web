@@ -86,16 +86,17 @@ void insertItemAndRelocateBoxes (BoxItem i) {
       if (ii.getKey() == allsongsKey)
         ii.setStatus(2);
     if (nSongs == 1) {
-      println ("HEREEEEEE");
       for (BoxOption o: oboxes)
-        if (o.getKey() == shuffleKey)
+        if (o.getKey() == shuffleKey) {
           o.setStatus(2);
+        }
         else o.setStatus(1);
     } 
     else {
       for (BoxOption o: oboxes)
-        if (o.getKey() == shuffleKey)
+        if (o.getKey() == shuffleKey && o.getStatus() == 2) {
           o.setStatus(1);
+        }
     }
   }
   insertBoxItem(i);
@@ -270,7 +271,7 @@ void relocateBoxes() {
   }
 
   /* Starting position for command line phrase*/
-  posHCounterSentence = marginLeftRight;
+  posHCounterSentence = marginLeftRight*1.5;
   posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
 
   BoxCommand bcPointer = bcHead;
@@ -292,10 +293,11 @@ void relocateBoxes() {
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
     bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    posHCounterSentence += bcPointer.boxWidth + boxHorizontalGapCommandLine;
-
+    //posHCounterSentence += bcPointer.boxWidth + boxHorizontalGapCommandLine;
+    posHCounterSentence += bcPointer.boxWidth + punctuationGapLR;
     numCommands ++;
     bcPointer.openParenthesis = "("; 
+    posHClosedParenthesis = posHCounterSentence;
     bcPointer.closedParenthesis = ")";
 
     bcPointer = bcPointer.next;
@@ -312,7 +314,8 @@ void relocateBoxes() {
   String first = "";
   String last = "";
   boolean isFirst = true;
-  
+  boolean containsAllSongs = false;
+
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
@@ -325,7 +328,7 @@ void relocateBoxes() {
       numItems ++;
       // only for first song added, increse margin because two interpunc marks will be added '(['
       if (numItems == 1) {
-        posHCounterSentence += punctuationGapLR;
+        posHCounterSentence += punctuationGapLR/2;
       }
       if (numItems >= 1) {
         // save first and last songs in items
@@ -337,7 +340,10 @@ void relocateBoxes() {
           last = biPointer.getKey();
         }
       }
-    } 
+    }
+    else {
+      containsAllSongs = true;
+    }
 
     biPointer.reallocate(posHCounterSentence, posVCounterSentence);
     posHCounterSentence += biPointer.boxWidth + boxHorizontalGapCommandLine ;
@@ -345,10 +351,10 @@ void relocateBoxes() {
     isFirst = false;
     execStatus = true;
   }
-//  println("len: " + numItems);
-//  println("first: " + first);
-//  println("last: " + last);
 
+  if (containsAllSongs) {
+    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
+  }
   if (numItems == 0) {
     for (BoxItem i: iboxes) {
       i.openBrackets = "";
@@ -357,6 +363,7 @@ void relocateBoxes() {
     }
   }
   else {
+    posHClosedParenthesis = posHCounterSentence - punctuationGapLR/2;
     if (first == last) {
       for (BoxItem i: iboxes) {
         if (i.getKey () == first) {
@@ -368,10 +375,8 @@ void relocateBoxes() {
       }
     }
     else {
-      println("here");
       for (BoxItem i: iboxes) {
         if (i.getStatus () == 3) {
-          println ("iboxes " + i.getKey());
           if (i.getKey () == first) {
             i.closedBrackets = "";
             i.openBrackets = "[";
@@ -408,6 +413,7 @@ void relocateBoxes() {
   }
 
   if (numOptions >= 1) {
+    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
     for (BoxOption o: oboxes)
       o.comma = ",";
   }

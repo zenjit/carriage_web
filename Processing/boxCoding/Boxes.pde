@@ -51,6 +51,7 @@ class Box {
 
   /* Draws box */
   void drawBox() {
+    /* Drawing boxes */
     strokeWeight(2);
     stroke(frameColor[0], frameColor[1], frameColor[2]);    
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
@@ -58,15 +59,17 @@ class Box {
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //    textSize(fontSize); // uncomment this for custom fontSize
     text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
+  }
 
-    // open parenthesis between command and items,
+  void drawPunctuation() {
+    /* Drawing punctuation marks */
     fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
-    text(closedParenthesis, posHCounterSentence, positionV + 2, punctuationGapLR, boxHeight);
+    // For closed parenthesis posHClosedParenthesis custom variable is used, see Boxes.pde
+    text(closedParenthesis, posHClosedParenthesis, positionV + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
-    text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight); 
-    //    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);
+    text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {

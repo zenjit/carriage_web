@@ -33,6 +33,7 @@ float posHCounter;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
+float posHClosedParenthesis;
 int nSongs = 0;
 
 /* Command Boxes  */
@@ -113,15 +114,19 @@ void draw() {
   for (BoxCommand c: cboxes) {
     c.move();
     c.drawBox();
+    c.drawPunctuation();
   }
   for (BoxItem i: iboxes) {
     i.move();
     i.drawBox();
+    i.drawPunctuation();
   }  
   for (BoxOption o: oboxes) {
     o.move();
     o.drawBox();
+    o.drawPunctuation();
   }
+
 }
 
 void actionHandler () {
@@ -215,8 +220,6 @@ void generateRandomSongList() {
   int numberOfSongs = (int)(random (1, 6));
   int[] rndsongs = new int[numberOfSongs];
 
-  println(numberOfSongs);
-
   do {
     isFirstOccurrence = true;
     // get random song
@@ -237,7 +240,6 @@ void generateRandomSongList() {
   while (count < numberOfSongs);
 
   for (int r =0; r < rndsongs.length; r++) {
-    println(rndsongs[r]);
     insertItemAndRelocateBoxes(iboxes[rndsongs[r]]);
   }
 }
