@@ -6,7 +6,10 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 990, screenHeight = 400;
+int screenWidth = 800, screenHeight = 400;
+int screenWidthMobile = 400, screenHeightMobile = 300;
+
+boolean mobile = false;
 
 /* Fonts */
 float fontSizeRef = 20;
@@ -33,6 +36,7 @@ float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
 float posHClosedParenthesis;
+float posVClosedParenthesis;
 int nSongs = 0;
 int numberOfRndSongs = 0;
 
@@ -71,8 +75,15 @@ BoxOption boHead = null;
 List<String> sentence;
 
 void setup() {
+  //mobile = true;
   frameRate(30);
-  size(990, 400);
+  if (mobile) { 
+    size(400, 300);
+    fontSizeRef /= 1.2;
+  }
+  else {
+    size(800, 400);
+  }
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
@@ -106,10 +117,17 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5);
+  if (mobile) {
+    rect(marginLeftRight/2, height-(fontSizeRef * 6), width-marginLeftRight-executeButtonGap, (fontSizeRef*6)-delta/2, 5);
+    fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+    triangle(width-executeButtonGap, height-(fontSizeRef*4.5), width-delta, height-(fontSizeRef*3)-delta/2, width-executeButtonGap, height - delta/2 - fontSizeRef*1.5);
+  }
+  else {
+    rect(marginLeftRight/2, height-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5); 
+    fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3), width-delta, height-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
+  }
   updateExecButtonColor();
-  fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-  triangle(width-executeButtonGap, screenHeight-(fontSizeRef*3), width-delta, screenHeight-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
