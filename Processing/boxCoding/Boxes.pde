@@ -11,7 +11,7 @@ class Box {
   float boxWidth, boxHeight;
   float positionH, positionV; 
   float positionHmov, positionVmov;
-  float cornerRadius = 5; 
+  //float cornerRadius = 5;
   //  boolean active = true;
   //  boolean used = false;
   int status = 1; 
@@ -61,7 +61,7 @@ class Box {
     strokeWeight(2);
     stroke(frameColor[0], frameColor[1], frameColor[2]);    
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
+    rect(positionHmov, positionVmov, boxWidth, boxHeight /*, cornerRadius*/);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //    textSize(fontSize); // uncomment this for custom fontSize
     text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
@@ -120,7 +120,7 @@ class Box {
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
     if (status == 3 && abs(positionH - positionHmov) < boxHeight && abs(positionV - positionVmov) < boxWidth)
-      transpSymbol = min(255, transpSymbol+10);    
+      transpSymbol = min(255, transpSymbol+10);
   }
 
   void setStatus(int stat) {

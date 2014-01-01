@@ -34,6 +34,7 @@ void insertCommandAndRelocateBoxes (BoxCommand c) {
 void removeItemAndRelocateBoxes (BoxItem i) {
   removeBoxItem(i);
   if (i.getKey() == allsongsKey) {
+    execStatus = false;
     for (BoxOption o: oboxes) {
       if (o.getStatus() == 3)
         removeBoxOption(o);
@@ -47,6 +48,7 @@ void removeItemAndRelocateBoxes (BoxItem i) {
   else {
     nSongs--;
     if (nSongs == 0) {
+      execStatus = false;
       for (BoxOption o: oboxes) {
         if (o.getStatus() == 3) {
           removeBoxOption(o);
@@ -57,7 +59,7 @@ void removeItemAndRelocateBoxes (BoxItem i) {
         if (ii.getKey() == allsongsKey)
           ii.setStatus(1);
     }
-    if (nSongs <= 1) {
+    if (nSongs == 1) {
       for (BoxOption o: oboxes)
         if (o.getKey() == shuffleKey) {
           if (o.getStatus() == 3) {
@@ -84,6 +86,7 @@ void insertItemAndRelocateBoxes (BoxItem i) {
       if (ii.getKey() == allsongsKey)
         ii.setStatus(2);
     if (nSongs == 1) {
+      println ("HEREEEEEE");
       for (BoxOption o: oboxes)
         if (o.getKey() == shuffleKey)
           o.setStatus(2);
@@ -266,8 +269,9 @@ void relocateBoxes() {
     }
   }
 
+  /* Starting position for command line phrase*/
   posHCounterSentence = marginLeftRight;
-  posVCounterSentence = screenHeight/2 + marginTopC;
+  posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
 
   BoxCommand bcPointer = bcHead;
   BoxItem biPointer = biHead;
@@ -302,6 +306,7 @@ void relocateBoxes() {
       c.openParenthesis = "";
       c.closedParenthesis = "";
     }
+    execStatus = false;
   }
 
   String first = "";
@@ -338,6 +343,7 @@ void relocateBoxes() {
     posHCounterSentence += biPointer.boxWidth + boxHorizontalGapCommandLine ;
     biPointer = biPointer.next;
     isFirst = false;
+    execStatus = true;
   }
 //  println("len: " + numItems);
 //  println("first: " + first);

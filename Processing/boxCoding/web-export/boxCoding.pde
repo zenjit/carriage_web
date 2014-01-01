@@ -7,19 +7,26 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 600, screenHeight = 400;
+int screenWidth = 990, screenHeight = 400;
 
 /* Fonts */
-float fontSizeRef = 15;
+float fontSizeRef = 20;
 
 /* Boxes general settings */
 float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
 float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
-float marginTopI = fontSizeRef * 2.5 + 10;
-float marginTopO = fontSizeRef * 5 + 10;
+float marginTopI = fontSizeRef * 2.5 + delta;
+float marginTopO = fontSizeRef * 5 + delta;
+float executeButtonGap = fontSizeRef * 2.5;
 public float punctuationGapLR = boxHorizontalGapCommandLine;
+
+/* Execute button settings */
+int[] execButtonColor = new int[3];
+int[] execActiveColor = new int[3];
+int[] execInactiveColor = new int[3];
+public boolean execStatus = false; 
 
 /* Some counters */
 float posHCounter;
@@ -42,7 +49,7 @@ String[] iwords = {
 /* Option Boxes  */
 String shuffleKey = "shuffle";
 String[] owords = {
-  "volume", shuffleKey
+  shuffleKey, "loud"
 };
 
 /* Punctuation */
@@ -54,19 +61,19 @@ char comma = ',';
 
 BoxCommand[] cboxes = new BoxCommand[cwords.length];
 BoxItem[] iboxes = new BoxItem[iwords.length];
-BoxItem[] songList = new BoxItem[5];
+//BoxItem[] songList = new BoxItem[5];
 BoxOption[] oboxes = new BoxOption[owords.length];
 
 BoxCommand bcHead = null;
 BoxItem biHead = null;
-BoxItem songsPlaylistHead = null;
+//BoxItem songsPlaylistHead = null;
 BoxOption boHead = null;
 
 List<String> sentence;
 
 void setup() {
   frameRate(30);
-  size(600, 400);
+  size(990, 400);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
@@ -100,7 +107,10 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight/2, width-marginLeftRight, screenHeight/2-marginTopC, 5);
+  rect(marginLeftRight/2, screenHeight - (fontSizeRef * 3), width-marginLeftRight-executeButtonGap, screenHeight - delta /*, 5*/);
+  updateExecButtonColor();
+  fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+  triangle(width-executeButtonGap, screenHeight - (fontSizeRef * 3) + delta/2, width-delta/2, screenHeight - (fontSizeRef * 1.5), width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
@@ -165,6 +175,22 @@ void actionHandler () {
   relocateBoxes();
 }
 
+
+void updateExecButtonColor() {
+  if (execStatus) {
+    execActiveColor[0] = 0; 
+    execActiveColor[1] = 255; 
+    execActiveColor[2] = 0;
+    arraycopy(execActiveColor, 0, execButtonColor, 0, execButtonColor.length);
+  } 
+  else {
+    execInactiveColor[0] = 118; 
+    execInactiveColor[1] = 118; 
+    execInactiveColor[2] = 118;
+    arraycopy(execInactiveColor, 0, execButtonColor, 0, execButtonColor.length);
+  }
+}
+
 void randomSentence() {
   int unodue = (int)(random (0, 2)); // random between play and repeat
   insertCommandAndRelocateBoxes(cboxes[unodue]);
@@ -182,7 +208,7 @@ void randomSentence() {
     int whichOption = (int)(random (0, 2)); // random between play and repeat
     insertOptionAndRelocateBoxes(oboxes[whichOption]);
   }
-  else if (options == 2) { // both options
+  else { // both options
     insertOptionAndRelocateBoxes(oboxes[0]);
     insertOptionAndRelocateBoxes(oboxes[1]);
   }
@@ -212,7 +238,7 @@ void generateRandomSongList() {
       rndsongs[count] = songNumber;
       count++;
     }
-  }
+  } 
   while (count < numberOfSongs);
 
   for (int r =0; r < rndsongs.length; r++) {
@@ -220,8 +246,6 @@ void generateRandomSongList() {
     insertItemAndRelocateBoxes(iboxes[rndsongs[r]]);
   }
 }
-
-
 
 List<String> giveMeMySentence() {
   return sentence;
@@ -263,6 +287,7 @@ void insertCommandAndRelocateBoxes (BoxCommand c) {
 void removeItemAndRelocateBoxes (BoxItem i) {
   removeBoxItem(i);
   if (i.getKey() == allsongsKey) {
+    execStatus = false;
     for (BoxOption o: oboxes) {
       if (o.getStatus() == 3)
         removeBoxOption(o);
@@ -276,6 +301,7 @@ void removeItemAndRelocateBoxes (BoxItem i) {
   else {
     nSongs--;
     if (nSongs == 0) {
+      execStatus = false;
       for (BoxOption o: oboxes) {
         if (o.getStatus() == 3) {
           removeBoxOption(o);
@@ -286,7 +312,7 @@ void removeItemAndRelocateBoxes (BoxItem i) {
         if (ii.getKey() == allsongsKey)
           ii.setStatus(1);
     }
-    if (nSongs <= 1) {
+    if (nSongs == 1) {
       for (BoxOption o: oboxes)
         if (o.getKey() == shuffleKey) {
           if (o.getStatus() == 3) {
@@ -313,6 +339,7 @@ void insertItemAndRelocateBoxes (BoxItem i) {
       if (ii.getKey() == allsongsKey)
         ii.setStatus(2);
     if (nSongs == 1) {
+      println ("HEREEEEEE");
       for (BoxOption o: oboxes)
         if (o.getKey() == shuffleKey)
           o.setStatus(2);
@@ -495,8 +522,9 @@ void relocateBoxes() {
     }
   }
 
+  /* Starting position for command line phrase*/
   posHCounterSentence = marginLeftRight;
-  posVCounterSentence = screenHeight/2 + marginTopC;
+  posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
 
   BoxCommand bcPointer = bcHead;
   BoxItem biPointer = biHead;
@@ -504,7 +532,7 @@ void relocateBoxes() {
 
   sentence = new ArrayList<String>();
 
-  // counters for pun
+  // counters for punctuation marks
   int numCommands = 0;
   int numItems = 0;
   int numOptions = 0;
@@ -531,11 +559,13 @@ void relocateBoxes() {
       c.openParenthesis = "";
       c.closedParenthesis = "";
     }
+    execStatus = false;
   }
 
   String first = "";
   String last = "";
   boolean isFirst = true;
+  
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
@@ -566,10 +596,11 @@ void relocateBoxes() {
     posHCounterSentence += biPointer.boxWidth + boxHorizontalGapCommandLine ;
     biPointer = biPointer.next;
     isFirst = false;
+    execStatus = true;
   }
-  println("len: " + numItems);
-  println("first: " + first);
-  println("last: " + last);
+//  println("len: " + numItems);
+//  println("first: " + first);
+//  println("last: " + last);
 
   if (numItems == 0) {
     for (BoxItem i: iboxes) {
@@ -659,7 +690,7 @@ class Box {
   float boxWidth, boxHeight;
   float positionH, positionV; 
   float positionHmov, positionVmov;
-  float cornerRadius = 5; 
+  //float cornerRadius = 5;
   //  boolean active = true;
   //  boolean used = false;
   int status = 1; 
@@ -683,20 +714,22 @@ class Box {
     frameActiveColor[0] = 0; 
     frameActiveColor[1] = 255; 
     frameActiveColor[2] = 0;
-    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
-    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
     fontColor[0] = 0; 
     fontColor[1] = 0; 
     fontColor[2] = 0;
+    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
+    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
+    arraycopy(fillColor, 0, fillColor, 0, fillColor.length );
+    arraycopy(fontColor, 0, fontColor, 0, fontColor.length );
 
     fontSize = fontSizeR;
 
     keyword = keyw;
 
-    boxWidth = fontSizeR * 0.5 * keyword.length() + 20;
+    boxWidth = fontSizeR * 0.75 * keyword.length() + 20;
     boxHeight = fontSizeR * 1.5;
     positionH = positionHmov = posH;
     positionV = positionVmov = posV;
@@ -707,13 +740,13 @@ class Box {
     strokeWeight(2);
     stroke(frameColor[0], frameColor[1], frameColor[2]);    
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight, cornerRadius);
+    rect(positionHmov, positionVmov, boxWidth, boxHeight /*, cornerRadius*/);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //    textSize(fontSize); // uncomment this for custom fontSize
     text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
-    //    fill(0,0,0, transpSymbol);
-    //fill(255,255,255);
+
     // open parenthesis between command and items,
+    fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(closedParenthesis, posHCounterSentence, positionV + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
@@ -721,7 +754,6 @@ class Box {
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight); 
     //    text("(", positionHmov+20, positionVmov+4, boxWidth, boxHeight);
   }
-
 
   void reallocate(float posH, float posV) {
     positionH = posH;
@@ -736,10 +768,12 @@ class Box {
     else if (status == 1) {
       arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
       transparency = 150;
+      transpSymbol = 0;
     } 
     else {
       arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
       transparency = 150;
+      transpSymbol = 0;
     }
     //    active = !active;
     //    if (!active)
@@ -762,17 +796,17 @@ class Box {
   }
 
   void move() {
-    // bool drawSymbol is true when positionH - positionHmov && positionV - positionVmov < 0.1?
-    transpSymbol = min(255, transpSymbol+0.01);
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
+    if (status == 3 && abs(positionH - positionHmov) < boxHeight && abs(positionV - positionVmov) < boxWidth)
+      transpSymbol = min(255, transpSymbol+10);
   }
 
   void setStatus(int stat) {
     status = stat;
     updateColors();
   }
-  
+
   int getStatus() {
     return status;
   }

@@ -7,19 +7,26 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 1000, screenHeight = 600;
+int screenWidth = 990, screenHeight = 400;
 
 /* Fonts */
-float fontSizeRef = 25;
+float fontSizeRef = 20;
 
 /* Boxes general settings */
 float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
 float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
-float marginTopI = fontSizeRef * 2.5 + 10;
-float marginTopO = fontSizeRef * 5 + 10;
+float marginTopI = fontSizeRef * 2.5 + delta;
+float marginTopO = fontSizeRef * 5 + delta;
+float executeButtonGap = fontSizeRef * 2.5;
 public float punctuationGapLR = boxHorizontalGapCommandLine;
+
+/* Execute button settings */
+int[] execButtonColor = new int[3];
+int[] execActiveColor = new int[3];
+int[] execInactiveColor = new int[3];
+public boolean execStatus = false; 
 
 /* Some counters */
 float posHCounter;
@@ -42,7 +49,7 @@ String[] iwords = {
 /* Option Boxes  */
 String shuffleKey = "shuffle";
 String[] owords = {
-  "volume", shuffleKey
+  shuffleKey, "loud"
 };
 
 /* Punctuation */
@@ -54,19 +61,19 @@ char comma = ',';
 
 BoxCommand[] cboxes = new BoxCommand[cwords.length];
 BoxItem[] iboxes = new BoxItem[iwords.length];
-BoxItem[] songList = new BoxItem[5];
+//BoxItem[] songList = new BoxItem[5];
 BoxOption[] oboxes = new BoxOption[owords.length];
 
 BoxCommand bcHead = null;
 BoxItem biHead = null;
-BoxItem songsPlaylistHead = null;
+//BoxItem songsPlaylistHead = null;
 BoxOption boHead = null;
 
 List<String> sentence;
 
 void setup() {
   frameRate(30);
-  size(1000, 600);
+  size(990, 400);
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
@@ -100,7 +107,10 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight/2, width-marginLeftRight, screenHeight/2-marginTopC, 5);
+  rect(marginLeftRight/2, screenHeight - (fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef * 3)-delta/2  /*, 5*/);
+  updateExecButtonColor();
+  fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+  triangle(width-executeButtonGap, screenHeight - (fontSizeRef * 3), width-delta/2, screenHeight - (fontSizeRef * 1.5), width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
@@ -165,6 +175,21 @@ void actionHandler () {
   relocateBoxes();
 }
 
+void updateExecButtonColor() {
+  if (execStatus) {
+    execActiveColor[0] = 0; 
+    execActiveColor[1] = 255; 
+    execActiveColor[2] = 0;
+    arraycopy(execActiveColor, 0, execButtonColor, 0, execButtonColor.length);
+  } 
+  else {
+    execInactiveColor[0] = 118; 
+    execInactiveColor[1] = 118; 
+    execInactiveColor[2] = 118;
+    arraycopy(execInactiveColor, 0, execButtonColor, 0, execButtonColor.length);
+  }
+}
+
 void randomSentence() {
   int unodue = (int)(random (0, 2)); // random between play and repeat
   insertCommandAndRelocateBoxes(cboxes[unodue]);
@@ -182,7 +207,7 @@ void randomSentence() {
     int whichOption = (int)(random (0, 2)); // random between play and repeat
     insertOptionAndRelocateBoxes(oboxes[whichOption]);
   }
-  else if (options == 2) { // both options
+  else { // both options
     insertOptionAndRelocateBoxes(oboxes[0]);
     insertOptionAndRelocateBoxes(oboxes[1]);
   }
@@ -212,7 +237,7 @@ void generateRandomSongList() {
       rndsongs[count] = songNumber;
       count++;
     }
-  }
+  } 
   while (count < numberOfSongs);
 
   for (int r =0; r < rndsongs.length; r++) {
@@ -220,8 +245,6 @@ void generateRandomSongList() {
     insertItemAndRelocateBoxes(iboxes[rndsongs[r]]);
   }
 }
-
-
 
 List<String> giveMeMySentence() {
   return sentence;
