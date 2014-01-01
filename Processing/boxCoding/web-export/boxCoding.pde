@@ -6,7 +6,10 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 990, screenHeight = 400;
+int screenWidth = 800, screenHeight = 400;
+int screenWidthMobile = 400, screenHeightMobile = 300;
+
+boolean mobile = false;
 
 /* Fonts */
 float fontSizeRef = 20;
@@ -33,6 +36,7 @@ float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
 float posHClosedParenthesis;
+float posVClosedParenthesis;
 int nSongs = 0;
 int numberOfRndSongs = 0;
 
@@ -71,8 +75,15 @@ BoxOption boHead = null;
 List<String> sentence;
 
 void setup() {
+  mobile = true;
   frameRate(30);
-  size(990, 400);
+  if (mobile) { 
+    size(400, 300);
+    fontSizeRef /= 1.2;
+  }
+  else {
+    size(800, 400);
+  }
   //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
@@ -106,10 +117,17 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5);
+  if (mobile) {
+    rect(marginLeftRight/2, screenHeightMobile-(fontSizeRef * 6), width-marginLeftRight-executeButtonGap, (fontSizeRef*6)-delta/2, 5);
+    fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+    triangle(width-executeButtonGap, screenHeightMobile-(fontSizeRef*3), width-delta, screenHeightMobile-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeightMobile - delta/2);
+  }
+  else {
+    rect(marginLeftRight/2, screenHeight-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5); 
+    fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
+    triangle(width-executeButtonGap, screenHeight-(fontSizeRef*3), width-delta, screenHeight-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
+  }
   updateExecButtonColor();
-  fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-  triangle(width-executeButtonGap, screenHeight-(fontSizeRef*3), width-delta, screenHeight-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
@@ -210,7 +228,7 @@ void randomSentence() {
     else 
       insertOptionAndRelocateBoxes(oboxes[whichOption]);
   }
-  else { // both options
+  else if (options == 2) { // both options
     println(numberOfRndSongs);
     if (numberOfRndSongs != 1) // if a single song has been randomly selected, don't put shuffle option
       insertOptionAndRelocateBoxes(oboxes[0]);
@@ -480,13 +498,15 @@ void removeBoxOption(BoxOption aBox) {
   }
 }
 
+boolean hasMoreLines = false;
+
 void relocateBoxes() {
   posHCounter = marginLeftRight;
   posVCounterC = marginTopC;
 
   for (BoxCommand c: cboxes) {
     if (c.getStatus() != 3) {
-      if (posHCounter + c.boxWidth > width - marginLeftRight) {
+      if (posHCounter + c.boxWidth > width - marginLeftRight - executeButtonGap) {
         posHCounter = marginLeftRight;
         posVCounterC += c.boxHeight + boxVerticalGap;
       }
@@ -526,8 +546,12 @@ void relocateBoxes() {
 
   /* Starting position for command line phrase*/
   posHCounterSentence = marginLeftRight*1.5;
-  posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
-
+  if (mobile) {
+    posVCounterSentence = screenHeightMobile - (fontSizeRef * 6) + marginTopC;
+  }
+  else {
+    posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
+  }
   BoxCommand bcPointer = bcHead;
   BoxItem biPointer = biHead;
   BoxOption boPointer = boHead;
@@ -542,7 +566,7 @@ void relocateBoxes() {
   // COMMAND LINE COMMANDS RELOCATION AND PUNCTUATION
   while (bcPointer != null) {
     sentence.add(bcPointer.getKey());
-    if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRight) {
+    if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
       posHCounterSentence = marginLeftRight;
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
@@ -552,6 +576,7 @@ void relocateBoxes() {
     numCommands ++;
     bcPointer.openParenthesis = "("; 
     posHClosedParenthesis = posHCounterSentence;
+    posVClosedParenthesis = posVCounterSentence;
     bcPointer.closedParenthesis = ")";
 
     bcPointer = bcPointer.next;
@@ -573,8 +598,8 @@ void relocateBoxes() {
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
-    if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRight) {
-      posHCounterSentence = marginLeftRight;
+    if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
+      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
       posVCounterSentence += biPointer.boxHeight + boxVerticalGap;
     }
     // if one or more songs are present
@@ -608,6 +633,7 @@ void relocateBoxes() {
 
   if (containsAllSongs) {
     posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVCounterSentence;
   }
   if (numItems == 0) {
     for (BoxItem i: iboxes) {
@@ -618,6 +644,7 @@ void relocateBoxes() {
   }
   else {
     posHClosedParenthesis = posHCounterSentence - punctuationGapLR/2;
+    posVClosedParenthesis = posVCounterSentence;
     if (first == last) {
       for (BoxItem i: iboxes) {
         if (i.getKey () == first) {
@@ -656,8 +683,8 @@ void relocateBoxes() {
   while (boPointer != null) {
     sentence.add(boPointer.getKey());
     numOptions ++;
-    if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRight) {
-      posHCounterSentence = marginLeftRight;
+    if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
+      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
       posVCounterSentence += boPointer.boxHeight + boxVerticalGap;
     }
 
@@ -668,6 +695,7 @@ void relocateBoxes() {
 
   if (numOptions >= 1) {
     posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVCounterSentence;
     for (BoxOption o: oboxes)
       o.comma = ",";
   }
@@ -752,7 +780,7 @@ class Box {
     fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
-    text(closedParenthesis, posHClosedParenthesis, positionV + 2, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);

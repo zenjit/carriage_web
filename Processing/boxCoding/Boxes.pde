@@ -66,7 +66,7 @@ class Box {
     fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
-    text(closedParenthesis, posHClosedParenthesis, positionV + 2, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
