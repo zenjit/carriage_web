@@ -12,8 +12,6 @@ class Box {
   float positionH, positionV; 
   float positionHmov, positionVmov;
   //float cornerRadius = 5;
-  //  boolean active = true;
-  //  boolean used = false;
   int status = 1; 
   float transparency = 150;
   String openParenthesis = "";
@@ -29,23 +27,18 @@ class Box {
     /* Color setup */
     // There must be a better way to set this
 
-    frameInactiveColor[0] = 118; 
-    frameInactiveColor[1] = 118; 
-    frameInactiveColor[2] = 118;
-    frameActiveColor[0] = 0; 
-    frameActiveColor[1] = 255; 
-    frameActiveColor[2] = 0;
+    frameUsedColor[0] = 118; 
+    frameUsedColor[1] = 118; 
+    frameUsedColor[2] = 118;
+    frameColor[0] = 0; 
+    frameColor[1] = 255; 
+    frameColor[2] = 0;
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
     fontColor[0] = 0; 
     fontColor[1] = 0; 
     fontColor[2] = 0;
-    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
-    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
-    arraycopy(fillColor, 0, fillColor, 0, fillColor.length );
-    arraycopy(fontColor, 0, fontColor, 0, fontColor.length );
-
     fontSize = fontSizeR;
 
     keyword = keyw;
@@ -83,22 +76,25 @@ class Box {
 
   void updateColors() {
     if (status == 3) {
-      arraycopy(frameUsedColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 118; 
+      frameColor[1] = 118; 
+      frameColor[2] = 118;
       transparency = 255;
     } 
     else if (status == 1) {
-      arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 0; 
+      frameColor[1] = 255; 
+      frameColor[2] = 0;
       transparency = 150;
       transpSymbol = 0;
     } 
     else {
-      arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 118; 
+      frameColor[1] = 118; 
+      frameColor[2] = 118;
       transparency = 150;
       transpSymbol = 0;
     }
-    //    active = !active;
-    //    if (!active)
-    //      used = !used;
   }
 
   boolean isClicked () {

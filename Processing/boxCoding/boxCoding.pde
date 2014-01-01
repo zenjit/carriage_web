@@ -61,12 +61,10 @@ char comma = ',';
 
 BoxCommand[] cboxes = new BoxCommand[cwords.length];
 BoxItem[] iboxes = new BoxItem[iwords.length];
-//BoxItem[] songList = new BoxItem[5];
 BoxOption[] oboxes = new BoxOption[owords.length];
 
 BoxCommand bcHead = null;
 BoxItem biHead = null;
-//BoxItem songsPlaylistHead = null;
 BoxOption boHead = null;
 
 List<String> sentence;
@@ -107,10 +105,10 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight - (fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef * 3)-delta/2  /*, 5*/);
+  rect(marginLeftRight/2, screenHeight-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5);
   updateExecButtonColor();
   fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-  triangle(width-executeButtonGap, screenHeight - (fontSizeRef * 3), width-delta/2, screenHeight - (fontSizeRef * 1.5), width-executeButtonGap, screenHeight - delta/2);
+  triangle(width-executeButtonGap, screenHeight-(fontSizeRef*3), width-delta, screenHeight-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
@@ -177,16 +175,14 @@ void actionHandler () {
 
 void updateExecButtonColor() {
   if (execStatus) {
-    execActiveColor[0] = 0; 
-    execActiveColor[1] = 255; 
-    execActiveColor[2] = 0;
-    arraycopy(execActiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    execButtonColor[0] = 0;
+    execButtonColor[1] = 255;
+    execButtonColor[2] = 0;
   } 
   else {
-    execInactiveColor[0] = 118; 
-    execInactiveColor[1] = 118; 
-    execInactiveColor[2] = 118;
-    arraycopy(execInactiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    execButtonColor[0] = 118;
+    execButtonColor[1] = 118;
+    execButtonColor[2] = 118;
   }
 }
 

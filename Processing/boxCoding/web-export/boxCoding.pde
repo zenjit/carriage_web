@@ -107,10 +107,10 @@ void draw() {
   background(0, 0, 0, 1.0);
   fill(240);
   noStroke();
-  rect(marginLeftRight/2, screenHeight - (fontSizeRef * 3), width-marginLeftRight-executeButtonGap, screenHeight - delta /*, 5*/);
+  rect(marginLeftRight/2, screenHeight - (fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef * 3)-delta/2, 5);
   updateExecButtonColor();
   fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-  triangle(width-executeButtonGap, screenHeight - (fontSizeRef * 3) + delta/2, width-delta/2, screenHeight - (fontSizeRef * 1.5), width-executeButtonGap, screenHeight - delta/2);
+  triangle(width-executeButtonGap, screenHeight - (fontSizeRef * 3), width-delta/4, screenHeight - (fontSizeRef * 1.5) -delta/2, width-executeButtonGap, screenHeight - delta/2);
 
   for (BoxCommand c: cboxes) {
     c.move();
@@ -175,19 +175,24 @@ void actionHandler () {
   relocateBoxes();
 }
 
-
 void updateExecButtonColor() {
   if (execStatus) {
-    execActiveColor[0] = 0; 
-    execActiveColor[1] = 255; 
-    execActiveColor[2] = 0;
-    arraycopy(execActiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    //    execActiveColor[0] = 0; 
+    //    execActiveColor[1] = 255; 
+    //    execActiveColor[2] = 0;
+    //    arraycopy(execActiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    execButtonColor[0] = 0;
+    execButtonColor[1] = 255;
+    execButtonColor[2] = 0;
   } 
   else {
-    execInactiveColor[0] = 118; 
-    execInactiveColor[1] = 118; 
-    execInactiveColor[2] = 118;
-    arraycopy(execInactiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    //    execInactiveColor[0] = 118; 
+    //    execInactiveColor[1] = 118; 
+    //    execInactiveColor[2] = 118;
+    //    arraycopy(execInactiveColor, 0, execButtonColor, 0, execButtonColor.length);
+    execButtonColor[0] = 118;
+    execButtonColor[1] = 118;
+    execButtonColor[2] = 118;
   }
 }
 
@@ -708,22 +713,34 @@ class Box {
     /* Color setup */
     // There must be a better way to set this
 
-    frameInactiveColor[0] = 118; 
-    frameInactiveColor[1] = 118; 
-    frameInactiveColor[2] = 118;
-    frameActiveColor[0] = 0; 
-    frameActiveColor[1] = 255; 
-    frameActiveColor[2] = 0;
+    frameUsedColor[0] = 118; 
+    frameUsedColor[1] = 118; 
+    frameUsedColor[2] = 118;
+    frameColor[0] = 0; 
+    frameColor[1] = 255; 
+    frameColor[2] = 0;
     fillColor[0] = 201;
     fillColor[1] = 102; 
     fillColor[2] = 10;
     fontColor[0] = 0; 
     fontColor[1] = 0; 
     fontColor[2] = 0;
-    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
-    arraycopy(frameActiveColor, 0, frameColor, 0, frameInactiveColor.length );
-    arraycopy(fillColor, 0, fillColor, 0, fillColor.length );
-    arraycopy(fontColor, 0, fontColor, 0, fontColor.length );
+    //    frameInactiveColor[0] = 118; 
+    //    frameInactiveColor[1] = 118; 
+    //    frameInactiveColor[2] = 118;
+    //    frameActiveColor[0] = 0; 
+    //    frameActiveColor[1] = 255; 
+    //    frameActiveColor[2] = 0;
+    //    fillColor[0] = 201;
+    //    fillColor[1] = 102; 
+    //    fillColor[2] = 10;
+    //    fontColor[0] = 0; 
+    //    fontColor[1] = 0; 
+    //    fontColor[2] = 0;
+    //    arraycopy(frameInactiveColor, 0, frameUsedColor, 0, frameInactiveColor.length );
+    //    arraycopy(frameActiveColor, 0, , 0, frameInactiveColor.length );
+    //    arraycopy(fillColor, 0, fillColor, 0, fillColor.length );
+    //    arraycopy(fontColor, 0, fontColor, 0, fontColor.length );
 
     fontSize = fontSizeR;
 
@@ -762,16 +779,25 @@ class Box {
 
   void updateColors() {
     if (status == 3) {
-      arraycopy(frameUsedColor, 0, frameColor, 0, frameUsedColor.length);
+      //arraycopy(frameUsedColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 118; 
+      frameColor[1] = 118; 
+      frameColor[2] = 118;
       transparency = 255;
     } 
     else if (status == 1) {
-      arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
+      //arraycopy(frameActiveColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 0; 
+      frameColor[1] = 255; 
+      frameColor[2] = 0;
       transparency = 150;
       transpSymbol = 0;
     } 
     else {
-      arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
+      //arraycopy(frameInactiveColor, 0, frameColor, 0, frameUsedColor.length);
+      frameColor[0] = 118; 
+      frameColor[1] = 118; 
+      frameColor[2] = 118;
       transparency = 150;
       transpSymbol = 0;
     }
