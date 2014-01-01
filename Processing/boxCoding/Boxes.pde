@@ -57,7 +57,7 @@ class Box {
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
     rect(positionHmov, positionVmov, boxWidth, boxHeight /*, cornerRadius*/);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
-    //    textSize(fontSize); // uncomment this for custom fontSize
+    //textSize(fontSize); // uncomment this for custom fontSize
     text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
   }
 
@@ -65,7 +65,7 @@ class Box {
     /* Drawing punctuation marks */
     fill(0, 0, 0, transpSymbol);
     text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
-    // For closed parenthesis posHClosedParenthesis custom variable is used, see Boxes.pde
+    // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
     text(closedParenthesis, posHClosedParenthesis, positionV + 2, punctuationGapLR, boxHeight);
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);

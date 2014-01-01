@@ -1,8 +1,7 @@
 /**
  Box-coding
  
- Rafael Redondo Tejedor CC - 12.2013
- Zenjiskan - 12.2013
+ Rafael Redondo Tejedor & Zenjiskan CC - 12.2013
  */
 import java.util.List;
 
@@ -35,6 +34,7 @@ float posHCounterSentence;
 float posVCounterSentence;
 float posHClosedParenthesis;
 int nSongs = 0;
+int numberOfRndSongs = 0;
 
 /* Command Boxes  */
 String[] cwords = {
@@ -126,7 +126,6 @@ void draw() {
     o.drawBox();
     o.drawPunctuation();
   }
-
 }
 
 void actionHandler () {
@@ -205,11 +204,16 @@ void randomSentence() {
 
   int options = (int)(random (0, 3)); // random number of options
   if (options == 1) {
-    int whichOption = (int)(random (0, 2)); // random between play and repeat
-    insertOptionAndRelocateBoxes(oboxes[whichOption]);
+    int whichOption = (int)(random (0, 2)); // pick a random option (only one)
+    if (numberOfRndSongs == 1) // if a single song has been randomly selected, don't put shuffle option
+      insertOptionAndRelocateBoxes(oboxes[1]);
+    else 
+      insertOptionAndRelocateBoxes(oboxes[whichOption]);
   }
-  else { // both options
-    insertOptionAndRelocateBoxes(oboxes[0]);
+  else if (options == 2) { // both options
+    println(numberOfRndSongs);
+    if (numberOfRndSongs != 1) // if a single song has been randomly selected, don't put shuffle option
+      insertOptionAndRelocateBoxes(oboxes[0]);
     insertOptionAndRelocateBoxes(oboxes[1]);
   }
 }
@@ -217,8 +221,8 @@ void randomSentence() {
 void generateRandomSongList() {
   boolean isFirstOccurrence = false;
   int songNumber, count = 0;
-  int numberOfSongs = (int)(random (1, 6));
-  int[] rndsongs = new int[numberOfSongs];
+  numberOfRndSongs = (int)(random (1, 6));
+  int[] rndsongs = new int[numberOfRndSongs];
 
   do {
     isFirstOccurrence = true;
@@ -237,7 +241,7 @@ void generateRandomSongList() {
       count++;
     }
   } 
-  while (count < numberOfSongs);
+  while (count < numberOfRndSongs);
 
   for (int r =0; r < rndsongs.length; r++) {
     insertItemAndRelocateBoxes(iboxes[rndsongs[r]]);
