@@ -70,6 +70,8 @@ class Box {
     text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
+    fill(0, 0, 0, 255*sin(frameCounter));
+    text("▒", posHPrompt + punctuationGapLR, posVPrompt + 2, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {

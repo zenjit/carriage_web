@@ -6,9 +6,8 @@
 import java.util.List;
 
 /* General page settings */
-int screenWidth = 800, screenHeight = 400;
-int screenWidthMobile = 400, screenHeightMobile = 300;
-
+//int screenWidth = 800, screenHeight = 400;
+//int screenWidthMobile = 400, screenHeightMobile = 300;
 boolean mobile = false;
 
 /* Fonts */
@@ -19,10 +18,9 @@ float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = 
 float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
-float marginTopI = fontSizeRef * 2.5 + delta;
-float marginTopO = fontSizeRef * 5 + delta;
 float executeButtonGap = fontSizeRef * 2.5;
 public float punctuationGapLR = boxHorizontalGapCommandLine;
+float promptGap = fontSizeRef * 4;
 
 /* Execute button settings */
 int[] execButtonColor = new int[3];
@@ -31,12 +29,15 @@ int[] execInactiveColor = new int[3];
 public boolean execStatus = false; 
 
 /* Some counters */
+float frameCounter;
 float posHCounter;
 float posVCounterC, posVCounterI, posVCounterO;
 float posHCounterSentence;
 float posVCounterSentence;
 float posHClosedParenthesis;
 float posVClosedParenthesis;
+float posHPrompt;
+float posVPrompt;
 int nSongs = 0;
 int numberOfRndSongs = 0;
 
@@ -112,6 +113,7 @@ void draw() {
   if (mousePressed) {
     actionHandler();
   }
+  frameCounter += 0.1;
 
   /* draws everything */
   background(0, 0, 0, 1.0);
@@ -121,11 +123,15 @@ void draw() {
     rect(marginLeftRight/2, height-(fontSizeRef * 6), width-marginLeftRight-executeButtonGap, (fontSizeRef*6)-delta/2, 5);
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
     triangle(width-executeButtonGap, height-(fontSizeRef*4.5), width-delta, height-(fontSizeRef*3)-delta/2, width-executeButtonGap, height - delta/2 - fontSizeRef*1.5);
+    fill(0, 0, 0);
+    text(">>", marginLeftRight/2, height - (fontSizeRef * 6) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
   }
   else {
     rect(marginLeftRight/2, height-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*3), width-delta, height-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, screenHeight - delta/2);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3), width-delta, height-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, height - delta/2);
+    fill(0, 0, 0);
+    text(">>", marginLeftRight/2, height - (fontSizeRef * 3) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
   }
   updateExecButtonColor();
 
@@ -143,6 +149,9 @@ void draw() {
     o.move();
     o.drawBox();
     o.drawPunctuation();
+  }
+  if (frameCounter >= 300) {
+    frameCounter = 0;
   }
 }
 

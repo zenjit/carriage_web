@@ -273,13 +273,17 @@ void relocateBoxes() {
   }
 
   /* Starting position for command line phrase*/
-  posHCounterSentence = marginLeftRight*1.5;
+  posHCounterSentence = marginLeftRight + promptGap/2;
   if (mobile) {
-    posVCounterSentence = screenHeightMobile - (fontSizeRef * 6) + marginTopC;
+    posVCounterSentence = height - (fontSizeRef * 6) + marginTopC;
   }
   else {
-    posVCounterSentence = screenHeight - (fontSizeRef * 3) + marginTopC;
+    posVCounterSentence = height - (fontSizeRef * 3) + marginTopC;
   }
+  posHCounterSentence = posHCounterSentence;
+  posHPrompt = posHCounterSentence - punctuationGapLR;
+  posVClosedParenthesis = posVPrompt = posVCounterSentence;
+
   BoxCommand bcPointer = bcHead;
   BoxItem biPointer = biHead;
   BoxOption boPointer = boHead;
@@ -299,12 +303,11 @@ void relocateBoxes() {
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
     bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    //posHCounterSentence += bcPointer.boxWidth + boxHorizontalGapCommandLine;
     posHCounterSentence += bcPointer.boxWidth + punctuationGapLR;
     numCommands ++;
     bcPointer.openParenthesis = "("; 
-    posHClosedParenthesis = posHCounterSentence;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     bcPointer.closedParenthesis = ")";
 
     bcPointer = bcPointer.next;
@@ -360,8 +363,8 @@ void relocateBoxes() {
   }
 
   if (containsAllSongs) {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
   }
   if (numItems == 0) {
     for (BoxItem i: iboxes) {
@@ -371,8 +374,8 @@ void relocateBoxes() {
     }
   }
   else {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR/2;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR/2;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     if (first == last) {
       for (BoxItem i: iboxes) {
         if (i.getKey () == first) {
@@ -422,8 +425,8 @@ void relocateBoxes() {
   }
 
   if (numOptions >= 1) {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     for (BoxOption o: oboxes)
       o.comma = ",";
   }
