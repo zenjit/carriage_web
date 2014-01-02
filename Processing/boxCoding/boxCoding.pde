@@ -76,7 +76,7 @@ BoxOption boHead = null;
 List<String> sentence;
 
 void setup() {
-  //mobile = true;
+  mobile = true;
   frameRate(30);
   if (mobile) { 
     size(400, 300);

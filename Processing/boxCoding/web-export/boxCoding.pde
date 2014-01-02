@@ -36,6 +36,8 @@ float posHCounterSentence;
 float posVCounterSentence;
 float posHClosedParenthesis;
 float posVClosedParenthesis;
+float posHPrompt;
+float posVPrompt;
 int nSongs = 0;
 int numberOfRndSongs = 0;
 
@@ -559,8 +561,10 @@ void relocateBoxes() {
   else {
     posVCounterSentence = height - (fontSizeRef * 3) + marginTopC;
   }
-  posVClosedParenthesis = posVCounterSentence;
-  posHClosedParenthesis = posHCounterSentence;
+  posHCounterSentence = posHCounterSentence;
+  posHPrompt = posHCounterSentence - punctuationGapLR;
+  posVClosedParenthesis = posVPrompt = posVCounterSentence;
+
   BoxCommand bcPointer = bcHead;
   BoxItem biPointer = biHead;
   BoxOption boPointer = boHead;
@@ -580,12 +584,11 @@ void relocateBoxes() {
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
     bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
-    //posHCounterSentence += bcPointer.boxWidth + boxHorizontalGapCommandLine;
     posHCounterSentence += bcPointer.boxWidth + punctuationGapLR;
     numCommands ++;
     bcPointer.openParenthesis = "("; 
-    posHClosedParenthesis = posHCounterSentence;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     bcPointer.closedParenthesis = ")";
 
     bcPointer = bcPointer.next;
@@ -641,8 +644,8 @@ void relocateBoxes() {
   }
 
   if (containsAllSongs) {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
   }
   if (numItems == 0) {
     for (BoxItem i: iboxes) {
@@ -652,8 +655,8 @@ void relocateBoxes() {
     }
   }
   else {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR/2;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR/2;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     if (first == last) {
       for (BoxItem i: iboxes) {
         if (i.getKey () == first) {
@@ -703,8 +706,8 @@ void relocateBoxes() {
   }
 
   if (numOptions >= 1) {
-    posHClosedParenthesis = posHCounterSentence - punctuationGapLR;
-    posVClosedParenthesis = posVCounterSentence;
+    posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
+    posVClosedParenthesis = posVPrompt = posVCounterSentence;
     for (BoxOption o: oboxes)
       o.comma = ",";
   }
@@ -794,7 +797,7 @@ class Box {
     text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
     text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
     fill(0, 0, 0, 255*sin(frameCounter));
-    text("▒", posHClosedParenthesis+punctuationGapLR, posVClosedParenthesis + 2, punctuationGapLR, boxHeight);
+    text("▒", posHPrompt + punctuationGapLR, posVPrompt + 2, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {
