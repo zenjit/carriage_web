@@ -437,9 +437,9 @@ void relocateBoxes() {
 
 
 
-  print("Sentence: ");
+  //print("Sentence: ");
   for (String z : sentence)
     print(z + ' ');
-  println();
+  //println();
 }
 

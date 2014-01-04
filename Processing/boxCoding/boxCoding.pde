@@ -8,10 +8,10 @@ import java.util.List;
 /* General page settings */
 //int screenWidth = 800, screenHeight = 400;
 //int screenWidthMobile = 400, screenHeightMobile = 300;
-boolean mobile = false;
+public boolean mobile = false;
 
 /* Fonts */
-float fontSizeRef = 20;
+float fontSizeRef = 16;
 
 /* Boxes general settings */
 float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
@@ -75,8 +75,16 @@ BoxOption boHead = null;
 
 List<String> sentence;
 
+PFont font;
+
 void setup() {
-  mobile = true;
+  // Font manager
+//  String[] fontList = PFont.list();
+//  println(fontList);
+  font = createFont("Silom", 32, true);
+  textFont(font, fontSizeRef);
+
+  //mobile = true;
   frameRate(30);
   if (mobile) { 
     size(400, 300);
@@ -127,9 +135,9 @@ void draw() {
     text(">>", marginLeftRight/2, height - (fontSizeRef * 6) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
   }
   else {
-    rect(marginLeftRight/2, height-(fontSizeRef * 3), width-marginLeftRight-executeButtonGap, (fontSizeRef*3)-delta/2, 5); 
+    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -1, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +1, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*3), width-delta, height-(fontSizeRef*1.5)-delta/2, width-executeButtonGap, height - delta/2);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2, width-executeButtonGap, height - fontSizeRef);
     fill(0, 0, 0);
     text(">>", marginLeftRight/2, height - (fontSizeRef * 3) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
   }
@@ -238,7 +246,7 @@ void randomSentence() {
       insertOptionAndRelocateBoxes(oboxes[whichOption]);
   }
   else if (options == 2) { // both options
-    println(numberOfRndSongs);
+    //println(numberOfRndSongs);
     if (numberOfRndSongs != 1) // if a single song has been randomly selected, don't put shuffle option
       insertOptionAndRelocateBoxes(oboxes[0]);
     insertOptionAndRelocateBoxes(oboxes[1]);

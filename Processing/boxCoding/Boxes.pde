@@ -43,7 +43,7 @@ class Box {
 
     keyword = keyw;
 
-    boxWidth = fontSizeR * 0.75 * keyword.length() + 20;
+    boxWidth = fontSizeR * 0.6 * keyword.length() + delta;
     boxHeight = fontSizeR * 1.5;
     positionH = positionHmov = posH;
     positionV = positionVmov = posV;
@@ -55,23 +55,24 @@ class Box {
     strokeWeight(2);
     stroke(frameColor[0], frameColor[1], frameColor[2]);    
     fill(fillColor[0], fillColor[1], fillColor[2], transparency);
-    rect(positionHmov, positionVmov, boxWidth, boxHeight /*, cornerRadius*/);
+    rect(positionHmov, positionVmov-delta/2, boxWidth, boxHeight /*, cornerRadius*/);
     fill(fontColor[0], fontColor[1], fontColor[2], transparency);
     //textSize(fontSize); // uncomment this for custom fontSize
-    text(keyword, positionHmov, positionVmov + 2, boxWidth, boxHeight);
+    textFont(font, fontSizeRef);
+    text(keyword, positionHmov, positionVmov + 6 -delta/2, boxWidth, boxHeight);
   }
 
   void drawPunctuation() {
     /* Drawing punctuation marks */
     fill(0, 0, 0, transpSymbol);
-    text(openParenthesis, positionH+boxWidth, positionV + 2, punctuationGapLR, boxHeight);
+    text(openParenthesis, positionH+boxWidth, positionV +1, punctuationGapLR, boxHeight);
     // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
-    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis + 2, punctuationGapLR, boxHeight);
-    text(openBrackets, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
-    text(closedBrackets, positionH + boxWidth, positionV + 2, punctuationGapLR, boxHeight);
-    text(comma, positionH - punctuationGapLR, positionV + 2, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis +1, punctuationGapLR, boxHeight);
+    text(openBrackets, positionH - punctuationGapLR, positionV +1 , punctuationGapLR, boxHeight);
+    text(closedBrackets, positionH + boxWidth, positionV +1, punctuationGapLR, boxHeight);
+    text(comma, positionH - punctuationGapLR, positionV +3, punctuationGapLR, boxHeight);
     fill(0, 0, 0, 255*sin(frameCounter));
-    text("▒", posHPrompt + punctuationGapLR, posVPrompt + 2, punctuationGapLR, boxHeight);
+    text("▒", posHPrompt + punctuationGapLR, posVPrompt +2, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {
