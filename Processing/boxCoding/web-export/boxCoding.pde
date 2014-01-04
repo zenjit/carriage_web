@@ -79,8 +79,8 @@ PFont font;
 
 void setup() {
   // Font manager
-//  String[] fontList = PFont.list();
-//  println(fontList);
+  //  String[] fontList = PFont.list();
+  //  println(fontList);
   font = createFont("Silom", 32, true);
   textFont(font, fontSizeRef);
 
@@ -210,6 +210,9 @@ void actionHandler () {
   }
 
   relocateBoxes();
+
+  if (isExecButtonClicked()) {
+  }
 }
 
 void updateExecButtonColor() {
@@ -283,8 +286,31 @@ void generateRandomSongList() {
   }
 }
 
+boolean isExecButtonClicked () {
+  if (  mouseX > (width-executeButtonGap) && mouseX < width &&
+    mouseY > (height-(fontSizeRef*3)+delta/4 -1) && mouseY < height - fontSizeRef*2 ) {
+
+    giveMeMySentence();
+
+    float time = millis();
+    while (millis ()-time < 200) {
+    }
+
+    return true;
+  }
+  else return false;
+}
+
 List<String> giveMeMySentence() {
+  printSentence();
   return sentence;
+}
+
+void printSentence() {
+  //print("Sentence: ");
+  for (String z : sentence)
+    print(z + "  ");
+  println();
 }
 
 void removeCommandAndRelocateBoxes (BoxCommand c) {
@@ -724,12 +750,6 @@ void relocateBoxes() {
       o.comma = "";
   }
 
-
-
-  //print("Sentence: ");
-  for (String z : sentence)
-    print(z + ' ');
-  //println();
 }
 
 class Box {

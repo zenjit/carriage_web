@@ -435,11 +435,5 @@ void relocateBoxes() {
       o.comma = "";
   }
 
-
-
-  //print("Sentence: ");
-  for (String z : sentence)
-    print(z + ' ');
-  //println();
 }
 
