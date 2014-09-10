@@ -9,18 +9,20 @@ import java.util.List;
 //int screenWidth = 800, screenHeight = 400;
 //int screenWidthMobile = 400, screenHeightMobile = 300;
 public boolean mobile = false;
+public boolean small = false;
 
 /* Fonts */
-float fontSizeRef = 16;
+float fontSizeRef = 22;
 
 /* Boxes general settings */
-float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
+float boxHorizontalGap = 15, boxVerticalGap = 15, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
+float startingHPosC = 0, startingHPosI = 0, startingHPosO = 0;
 float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
 float executeButtonGap = fontSizeRef * 2.5;
 public float punctuationGapLR = boxHorizontalGapCommandLine;
-float promptGap = fontSizeRef * 4;
+float promptGap = fontSizeRef * 3;
 
 /* Execute button settings */
 int[] execButtonColor = new int[3];
@@ -73,27 +75,40 @@ BoxCommand bcHead = null;
 BoxItem biHead = null;
 BoxOption boHead = null;
 
-List<String> sentence;
+public List<String> sentence;
+public String sentenza;
+//JSONObject json = new JSONObject();
 
 PFont font;
 
+// JS binding
+//interface JavaScript {
+//  void showRequest(String sentenza); }
+
+interface JavaScript {
+  void showRequest(String sentenza); }
+
+
+void bindJavascript(JavaScript js) {
+  javascript = js; }
+
+JavaScript javascript;
+  
 void setup() {
-  // Font manager
-  //  String[] fontList = PFont.list();
-  //  println(fontList);
+
   font = createFont("Silom", 32, true);
   textFont(font, fontSizeRef);
 
   //mobile = true;
   frameRate(30);
   if (mobile) { 
-    size(400, 300);
-    fontSizeRef /= 1.2;
+    size(400, 400);
+    //fontSizeRef /= 1.1;
   }
   else {
-    size(800, 400);
+    size(800, 320);
   }
-  //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
+  // colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
 
@@ -128,18 +143,18 @@ void draw() {
   fill(240);
   noStroke();
   if (mobile) {
-    rect(marginLeftRight/2, height-(fontSizeRef * 6), width-marginLeftRight-executeButtonGap, (fontSizeRef*6)-delta/2, 5);
+    rect(marginLeftRight/2, height/2, width-marginLeftRight, height/2-executeButtonGap - delta/2, 5);
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*4.5), width-delta, height-(fontSizeRef*3)-delta/2, width-executeButtonGap, height - delta/2 - fontSizeRef*1.5);
+    rect(marginLeftRight/2, height-executeButtonGap, width-marginLeftRight, executeButtonGap- delta/2, 5);
     fill(0, 0, 0);
-    text(">>", marginLeftRight/2, height - (fontSizeRef * 6) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
+    text(">>", marginLeftRight, height/2  + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   else {
-    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -1, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +1, 5); 
+    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -2, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +2, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2, width-executeButtonGap, height - fontSizeRef);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2 -2, width-executeButtonGap, height - fontSizeRef - 2);
     fill(0, 0, 0);
-    text(">>", marginLeftRight/2, height - (fontSizeRef * 3) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
+    text(">>", marginLeftRight, height - (fontSizeRef * 3) + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   updateExecButtonColor();
 
@@ -212,15 +227,18 @@ void actionHandler () {
   relocateBoxes();
 
   if (isExecButtonClicked()) {
+    
   }
 }
 
 void updateExecButtonColor() {
+  // Active
   if (execStatus) {
     execButtonColor[0] = 0;
     execButtonColor[1] = 255;
     execButtonColor[2] = 0;
   } 
+  // Inactive
   else {
     execButtonColor[0] = 118;
     execButtonColor[1] = 118;
@@ -287,24 +305,64 @@ void generateRandomSongList() {
 }
 
 boolean isExecButtonClicked () {
-  if (  mouseX > (width-executeButtonGap) && mouseX < width &&
-    mouseY > (height-(fontSizeRef*3)+delta/4 -1) && mouseY < height - fontSizeRef*2 ) {
+  if (mobile) {
+    if (execStatus) {
+      if (  mouseX > (delta/2) && mouseX < (width-delta/2) &&
+        mouseY > (height-(executeButtonGap + marginLeftRight/2)) && mouseY < (height - marginLeftRight/2)) {
 
-    giveMeMySentence();
+        giveMeMySentence();
 
-    float time = millis();
-    while (millis ()-time < 200) {
+        float time = millis();
+        while (millis ()-time < 200) {
+        }
+
+        return true;
+      }
+      else return false;
     }
-
-    return true;
+    else return false;
   }
-  else return false;
+  else {
+    if (execStatus) {
+      if (  mouseX > (width-executeButtonGap) && mouseX < width &&
+        mouseY > (height-(fontSizeRef*3)+delta/4 -1) && mouseY < height - fontSizeRef ) {
+
+        giveMeMySentence();
+
+        float time = millis();
+        while (millis ()-time < 200) {
+        }
+
+        return true;
+      }
+      else return false;
+    }
+    else return false;
+  }
 }
+
+int shit = 0;
 
 List<String> giveMeMySentence() {
-  printSentence();
+  exposeToJs();
+  //printSentence();
   return sentence;
 }
+
+void exposeToJs() {
+  sentenza = null;
+  for (String createSentenza : sentence){
+    if (sentenza != null) { 
+      sentenza = sentenza + " " + createSentenza;
+    }
+    else {
+      sentenza = createSentenza;
+    }
+  }
+  if(javascript!=null){
+    javascript.showRequest(sentenza);}
+
+} 
 
 void printSentence() {
   //print("Sentence: ");

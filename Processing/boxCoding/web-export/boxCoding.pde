@@ -9,18 +9,20 @@ import java.util.List;
 //int screenWidth = 800, screenHeight = 400;
 //int screenWidthMobile = 400, screenHeightMobile = 300;
 public boolean mobile = false;
+public boolean small = false;
 
 /* Fonts */
-float fontSizeRef = 16;
+float fontSizeRef = 22;
 
 /* Boxes general settings */
-float boxHorizontalGap = 10, boxVerticalGap = 10, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
+float boxHorizontalGap = 15, boxVerticalGap = 15, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
+float startingHPosC = 0, startingHPosI = 0, startingHPosO = 0;
 float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
 float executeButtonGap = fontSizeRef * 2.5;
 public float punctuationGapLR = boxHorizontalGapCommandLine;
-float promptGap = fontSizeRef * 4;
+float promptGap = fontSizeRef * 3;
 
 /* Execute button settings */
 int[] execButtonColor = new int[3];
@@ -73,27 +75,40 @@ BoxCommand bcHead = null;
 BoxItem biHead = null;
 BoxOption boHead = null;
 
-List<String> sentence;
+public List<String> sentence;
+public String sentenza;
+//JSONObject json = new JSONObject();
 
 PFont font;
 
+// JS binding
+//interface JavaScript {
+//  void showRequest(String sentenza); }
+
+interface JavaScript {
+  void showRequest(String sentenza); }
+
+
+void bindJavascript(JavaScript js) {
+  javascript = js; }
+
+JavaScript javascript;
+  
 void setup() {
-  // Font manager
-  //  String[] fontList = PFont.list();
-  //  println(fontList);
+
   font = createFont("Silom", 32, true);
   textFont(font, fontSizeRef);
 
   //mobile = true;
   frameRate(30);
   if (mobile) { 
-    size(400, 300);
-    fontSizeRef /= 1.2;
+    size(400, 400);
+    //fontSizeRef /= 1.1;
   }
   else {
-    size(800, 400);
+    size(800, 320);
   }
-  //  colorMode(RGB,1); // color nomenclature: RGB, HSV,...
+  // colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
   textAlign(CENTER);
 
@@ -128,18 +143,18 @@ void draw() {
   fill(240);
   noStroke();
   if (mobile) {
-    rect(marginLeftRight/2, height-(fontSizeRef * 6), width-marginLeftRight-executeButtonGap, (fontSizeRef*6)-delta/2, 5);
+    rect(marginLeftRight/2, height/2, width-marginLeftRight, height/2-executeButtonGap - delta/2, 5);
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*4.5), width-delta, height-(fontSizeRef*3)-delta/2, width-executeButtonGap, height - delta/2 - fontSizeRef*1.5);
+    rect(marginLeftRight/2, height-executeButtonGap, width-marginLeftRight, executeButtonGap- delta/2, 5);
     fill(0, 0, 0);
-    text(">>", marginLeftRight/2, height - (fontSizeRef * 6) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
+    text(">>", marginLeftRight, height/2  + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   else {
-    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -1, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +1, 5); 
+    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -2, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +2, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2, width-executeButtonGap, height - fontSizeRef);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2 -2, width-executeButtonGap, height - fontSizeRef - 2);
     fill(0, 0, 0);
-    text(">>", marginLeftRight/2, height - (fontSizeRef * 3) + marginTopC + 2, promptGap/2, fontSizeRef * 1.5);
+    text(">>", marginLeftRight, height - (fontSizeRef * 3) + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   updateExecButtonColor();
 
@@ -212,15 +227,18 @@ void actionHandler () {
   relocateBoxes();
 
   if (isExecButtonClicked()) {
+    
   }
 }
 
 void updateExecButtonColor() {
+  // Active
   if (execStatus) {
     execButtonColor[0] = 0;
     execButtonColor[1] = 255;
     execButtonColor[2] = 0;
   } 
+  // Inactive
   else {
     execButtonColor[0] = 118;
     execButtonColor[1] = 118;
@@ -287,24 +305,64 @@ void generateRandomSongList() {
 }
 
 boolean isExecButtonClicked () {
-  if (  mouseX > (width-executeButtonGap) && mouseX < width &&
-    mouseY > (height-(fontSizeRef*3)+delta/4 -1) && mouseY < height - fontSizeRef*2 ) {
+  if (mobile) {
+    if (execStatus) {
+      if (  mouseX > (delta/2) && mouseX < (width-delta/2) &&
+        mouseY > (height-(executeButtonGap + marginLeftRight/2)) && mouseY < (height - marginLeftRight/2)) {
 
-    giveMeMySentence();
+        giveMeMySentence();
 
-    float time = millis();
-    while (millis ()-time < 200) {
+        float time = millis();
+        while (millis ()-time < 200) {
+        }
+
+        return true;
+      }
+      else return false;
     }
-
-    return true;
+    else return false;
   }
-  else return false;
+  else {
+    if (execStatus) {
+      if (  mouseX > (width-executeButtonGap) && mouseX < width &&
+        mouseY > (height-(fontSizeRef*3)+delta/4 -1) && mouseY < height - fontSizeRef ) {
+
+        giveMeMySentence();
+
+        float time = millis();
+        while (millis ()-time < 200) {
+        }
+
+        return true;
+      }
+      else return false;
+    }
+    else return false;
+  }
 }
+
+int shit = 0;
 
 List<String> giveMeMySentence() {
-  printSentence();
+  exposeToJs();
+  //printSentence();
   return sentence;
 }
+
+void exposeToJs() {
+  sentenza = null;
+  for (String createSentenza : sentence){
+    if (sentenza != null) { 
+      sentenza = sentenza + " " + createSentenza;
+    }
+    else {
+      sentenza = createSentenza;
+    }
+  }
+  if(javascript!=null){
+    javascript.showRequest(sentenza);}
+
+} 
 
 void printSentence() {
   //print("Sentence: ");
@@ -544,12 +602,19 @@ void removeBoxOption(BoxOption aBox) {
 boolean hasMoreLines = false;
 
 void relocateBoxes() {
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosC = 0;
+  for (BoxCommand c: cboxes) {
+    if (c.getStatus() != 3) {
+      startingHPosC += c.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosC + boxHorizontalGap)/2;
   posVCounterC = marginTopC;
 
   for (BoxCommand c: cboxes) {
     if (c.getStatus() != 3) {
-      if (posHCounter + c.boxWidth > width - marginLeftRight - executeButtonGap) {
+      if (posHCounter + c.boxWidth > width - marginLeftRight) {
         posHCounter = marginLeftRight;
         posVCounterC += c.boxHeight + boxVerticalGap;
       }
@@ -558,7 +623,14 @@ void relocateBoxes() {
     }
   }
 
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosI = 0;
+  for (BoxItem i: iboxes) {
+    if (i.getStatus() != 3) {
+      startingHPosI += i.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosI + boxHorizontalGap)/2;
   posVCounterI = posVCounterC + cboxes[0].boxHeight + boxVerticalGap+10;
 
   for (BoxItem i: iboxes) {
@@ -572,7 +644,14 @@ void relocateBoxes() {
     }
   }
 
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosO = 0;
+  for (BoxOption o: oboxes) {
+    if (o.getStatus() != 3) {
+      startingHPosO += o.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosO + boxHorizontalGap)/2;
   posVCounterO = posVCounterI + iboxes[0].boxHeight + boxVerticalGap+10;
 
 
@@ -590,12 +669,12 @@ void relocateBoxes() {
   /* Starting position for command line phrase*/
   posHCounterSentence = marginLeftRight + promptGap/2;
   if (mobile) {
-    posVCounterSentence = height - (fontSizeRef * 6) + marginTopC;
+    posVCounterSentence = height/2 + marginTopC;
   }
   else {
     posVCounterSentence = height - (fontSizeRef * 3) + marginTopC;
   }
-  posHCounterSentence = posHCounterSentence;
+  //posHCounterSentence = posHCounterSentence;
   posHPrompt = posHCounterSentence - punctuationGapLR;
   posVClosedParenthesis = posVPrompt = posVCounterSentence;
 
@@ -613,8 +692,11 @@ void relocateBoxes() {
   // COMMAND LINE COMMANDS RELOCATION AND PUNCTUATION
   while (bcPointer != null) {
     sentence.add(bcPointer.getKey());
+    
+    //json.setString("command", bcPointer.getKey());
+    
     if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap;
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
     bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
@@ -642,10 +724,19 @@ void relocateBoxes() {
   boolean containsAllSongs = false;
 
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
+//  int c=0;
+//  JSONArray iValues = new JSONArray();
+  
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
+    
+//    JSONObject iItems = new JSONObject();
+//    iItems.setInt("id", c);
+//    iItems.setString("value", biPointer.getKey());
+//    iValues.setJSONObject(c, iItems);
+    
     if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap/2 + punctuationGapLR/2;
       posVCounterSentence += biPointer.boxHeight + boxVerticalGap;
     }
     // if one or more songs are present
@@ -675,7 +766,9 @@ void relocateBoxes() {
     biPointer = biPointer.next;
     isFirst = false;
     execStatus = true;
+//    c++;
   }
+//  json.setJSONArray("items", iValues);
 
   if (containsAllSongs) {
     posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
@@ -725,18 +818,27 @@ void relocateBoxes() {
     }
   }
 
+//  int d=0;
+//  JSONArray oValues = new JSONArray();
+      
   // COMMAND LINE OPTIONS RELOCATION AND PUNCTUATION
   while (boPointer != null) {
     sentence.add(boPointer.getKey());
+//    JSONObject oItems = new JSONObject();
+//    oItems.setInt("id", d);
+//    oItems.setString("value", boPointer.getKey());
+//    oValues.setJSONObject(d, oItems);
     numOptions ++;
     if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap/2 + punctuationGapLR/2;
       posVCounterSentence += boPointer.boxHeight + boxVerticalGap;
     }
 
     boPointer.reallocate(posHCounterSentence, posVCounterSentence);
     posHCounterSentence += boPointer.boxWidth + boxHorizontalGapCommandLine;
     boPointer = boPointer.next;
+//    json.setJSONArray("options", oValues);
+//    d++;
   }
 
   if (numOptions >= 1) {
@@ -749,7 +851,7 @@ void relocateBoxes() {
     for (BoxOption o: oboxes)
       o.comma = "";
   }
-
+//  saveJSONObject(json, "data/new.json");
 }
 
 class Box {
@@ -767,13 +869,15 @@ class Box {
   float positionHmov, positionVmov;
   //float cornerRadius = 5;
   int status = 1; 
-  float transparency = 150;
+  float fillTransparency = 150;
+  float fontTransparency = 255;
   String openParenthesis = "";
   String closedParenthesis = "";
   String openBrackets = "";
   String closedBrackets = "";
   String comma = "";
   float transpSymbol = 0;
+  boolean isAtBottom = false;
   Box next = null;
 
   /* Constructor */
@@ -787,17 +891,17 @@ class Box {
     frameColor[0] = 0; 
     frameColor[1] = 255; 
     frameColor[2] = 0;
-    fillColor[0] = 201;
-    fillColor[1] = 102; 
-    fillColor[2] = 10;
-    fontColor[0] = 0; 
-    fontColor[1] = 0; 
-    fontColor[2] = 0;
+    fillColor[0] = 0;
+    fillColor[1] = 0; 
+    fillColor[2] = 0;
+    fontColor[0] = 255; 
+    fontColor[1] = 255; 
+    fontColor[2] = 255;
     fontSize = fontSizeR;
 
     keyword = keyw;
 
-    boxWidth = fontSizeR * 0.6 * keyword.length() + delta;
+    boxWidth = fontSizeR * 0.65 * keyword.length() + delta;
     boxHeight = fontSizeR * 1.5;
     positionH = positionHmov = posH;
     positionV = positionVmov = posV;
@@ -807,26 +911,28 @@ class Box {
   void drawBox() {
     /* Drawing boxes */
     strokeWeight(2);
-    stroke(frameColor[0], frameColor[1], frameColor[2]);    
-    fill(fillColor[0], fillColor[1], fillColor[2], transparency);
+    // Box Frame Color
+    stroke(frameColor[0], frameColor[1], frameColor[2], fontTransparency);
+    // Box Fill Color
+    fill(fillColor[0], fillColor[1], fillColor[2], fillTransparency);
     rect(positionHmov, positionVmov-delta/2, boxWidth, boxHeight /*, cornerRadius*/);
-    fill(fontColor[0], fontColor[1], fontColor[2], transparency);
-    //textSize(fontSize); // uncomment this for custom fontSize
+    // Font Color
+    fill(fontColor[0], fontColor[1], fontColor[2], fontTransparency);
     textFont(font, fontSizeRef);
-    text(keyword, positionHmov, positionVmov + 6 -delta/2, boxWidth, boxHeight);
+    text(keyword, positionHmov, positionVmov + 8 -delta/2, boxWidth, boxHeight);
   }
 
   void drawPunctuation() {
     /* Drawing punctuation marks */
     fill(0, 0, 0, transpSymbol);
-    text(openParenthesis, positionH+boxWidth, positionV +1, punctuationGapLR, boxHeight);
+    text(openParenthesis, positionH+boxWidth, positionV +4, punctuationGapLR, boxHeight);
     // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
-    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis +1, punctuationGapLR, boxHeight);
-    text(openBrackets, positionH - punctuationGapLR, positionV +1 , punctuationGapLR, boxHeight);
-    text(closedBrackets, positionH + boxWidth, positionV +1, punctuationGapLR, boxHeight);
-    text(comma, positionH - punctuationGapLR, positionV +3, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis +4, punctuationGapLR, boxHeight);
+    text(openBrackets, positionH - punctuationGapLR, positionV +4 , punctuationGapLR, boxHeight);
+    text(closedBrackets, positionH + boxWidth, positionV +4, punctuationGapLR, boxHeight);
+    text(comma, positionH - punctuationGapLR, positionV +5, punctuationGapLR, boxHeight);
     fill(0, 0, 0, 255*sin(frameCounter));
-    text("▒", posHPrompt + punctuationGapLR, posVPrompt +2, punctuationGapLR, boxHeight);
+    text("▒", posHPrompt + punctuationGapLR - delta/2, posVPrompt +4, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {
@@ -835,25 +941,40 @@ class Box {
   }
 
   void updateColors() {
-    if (status == 3) {
-      frameColor[0] = 118; 
-      frameColor[1] = 118; 
-      frameColor[2] = 118;
-      transparency = 255;
+    // Used
+    if (status == 3 && isAtBottom) {
+      frameColor[0] = 0;
+      frameColor[1] = 0; 
+      frameColor[2] = 0;
+      fontColor[0] = 0;
+      fontColor[1] = 0;
+      fontColor[2] = 0;
+      fillTransparency = 0;
+      fontTransparency = 255;
     } 
+    // Available
     else if (status == 1) {
       frameColor[0] = 0; 
       frameColor[1] = 255; 
       frameColor[2] = 0;
-      transparency = 150;
+      fontColor[0] = 255;
+      fontColor[1] = 255;
+      fontColor[2] = 255;
+      fillTransparency = 255;
+      fontTransparency = 255;
       transpSymbol = 0;
     } 
+    // Unavailable
     else {
-      frameColor[0] = 118; 
-      frameColor[1] = 118; 
-      frameColor[2] = 118;
-      transparency = 150;
-      transpSymbol = 0;
+      frameColor[0] = 255; 
+      frameColor[1] = 255; 
+      frameColor[2] = 255;
+      fontColor[0] = 255;
+      fontColor[1] = 255;
+      fontColor[2] = 255;
+      fillTransparency = 150;
+      fontTransparency = 150;
+      //transpSymbol = 150;
     }
   }
 
@@ -864,7 +985,7 @@ class Box {
       updateColors();
 
       float time = millis();
-      while (millis ()-time < 200) {
+      while (millis ()-time < 200) {  
       }
 
       return true;
@@ -875,12 +996,20 @@ class Box {
   void move() {
     positionHmov += 0.1*(positionH - positionHmov);
     positionVmov += 0.1*(positionV - positionVmov);
-    if (status == 3 && abs(positionH - positionHmov) < boxHeight && abs(positionV - positionVmov) < boxWidth)
-      transpSymbol = min(255, transpSymbol+10);
+    if (status == 3 && abs(positionH - positionHmov) < boxHeight && abs(positionV - positionVmov) < 5) {
+      transpSymbol = min(255, transpSymbol+5);
+      fillTransparency = min(255, fillTransparency+1);
+      //fontTransparency = max(0, fontTransparency+5);
+      isAtBottom = true;
+      updateColors();
+    }
   }
 
   void setStatus(int stat) {
     status = stat;
+    if (status!=3) {
+      isAtBottom = false;
+    }
     updateColors();
   }
 

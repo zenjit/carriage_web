@@ -9,6 +9,7 @@
 *   <a href="http://soundcloud.com/matas/hobnotropic" class="sc-player">My new dub track</a>
 *   The link will be automatically replaced by the HTML based player
 */
+/* MESSED AROUND BY ZENJI, SUMCHO AND RDRK */
 (function($) {
   // Convert milliseconds into Hours (h), Minutes (m), and Seconds (s)
   var timecode = function(ms) {
@@ -315,6 +316,8 @@
           $('h4', this).html('by <a href="' + track.user.permalink_url +'">' + track.user.username + '</a>');
           $('p', this).html(track.description || 'no Description');
         });
+        // update track title
+        $('.sc-track-title', $player).html(track.title);
         // update the artwork
         $('.sc-artwork-list li', $player).each(function(index) {
           var $item = $(this),
@@ -406,9 +409,6 @@
         if (!$nextItem.length && repeat) {
           $nextItem = $('.sc-trackslist li', $player).first();
         }
-        /*else if(!$nextItem.length){
-          $nextItem = $player.nextAll('div.sc-player:first').find('.sc-trackslist li.active');
-        }*/
         $nextItem.click();
       },
       soundVolume = function() {
@@ -492,6 +492,7 @@
         $artworks = $('<ol class="sc-artwork-list"></ol>').appendTo($player),
         $info = $('<div class="sc-info"><h3></h3><h4></h4><p></p><a href="#" class="sc-info-close">X</a></div>').appendTo($player),
         $controls = $('<div class="sc-controls"></div>').appendTo($player),
+	$title = $('<h3 class="sc-track-title"></h3>').appendTo($player),
         $list = $('<ol class="sc-trackslist"></ol>').appendTo($player);
 
         // add the classes of the source node to the player itself
@@ -608,10 +609,10 @@
     },
     autoPlay: false,
     continuePlayback: true,
-    repeat: true,
+    repeat: false,
     randomize: false,
     loadArtworks: 5,
-    volume: 100,
+    volume: 80,
     // the default Api key should be replaced by your own one
     // get it here http://soundcloud.com/you/apps/new
     apiKey: 'htuiRd1JP11Ww0X72T1C3g'
@@ -723,77 +724,13 @@
   
   // Clears content of playlist
   $.scPlayer.clearPlayList=function($elem){
+    $.scPlayer.stopAll();
     var playerObj=players[$elem.data('sc-player').id];
     playerObj.tracks = [];
     var $list=$(playerObj.node).find('.sc-trackslist');
     $list.empty();
   }
-  /* CODE HAS BEEN REPLACED WITH IMPROVED SOUNDCLOUD PLAYER 
-  // Takes in track URL, sets track data and passes it to loadTrackInfo function
-  $.scPlayer.loadTrackUrl=function($elem,url){
-    var apiUrl = scApiUrl(url, apiKey);
-    $.getJSON(apiUrl, function(data) {
-        if(data.duration){
-          data.permalink_url = url;
-          $.scPlayer.loadTrackInfo($elem,data);//Call the previous function
-        }
-    });
-  }
-  
-  // Loads track and track data into player
-  $.scPlayer.loadTrackInfo=function($elem,track){
-        var playerObj=players[$elem.data('sc-player').id];
-        playerObj.tracks.push(track);
-        var index =playerObj.tracks.length-1;
-        var $list=$(playerObj.node).find('.sc-trackslist');
-        var $artworks=$(playerObj.node).find(".sc-artwork-list");
-        // add to playlist
-        var $li=$('<li><a href="' + track.permalink_url +'">' + track.title + '</a><span class="sc-track-duration">' + timecode(track.duration) + '</span></li>')
-            .data('sc-track', {id:index})
-            .appendTo($list);
-        // add to artwork list
-        $('<li></li>')
-            .append(artworkImage(track, true))
-            .appendTo($artworks)
-            .data('sc-track', track);
-        
-  } 
-  
-  // Plays the first item in the playlist
-  playFirstTrack=function($elem){
-        var playerObj=players[$elem.data('sc-player').id];
-        var $list=$(playerObj.node).find('.sc-trackslist');
-        $list.first().addClass('active');
-        $list.find('li.active').click()
-  }
-  $.scPlayer.loadTrackUrlAndPlay=function($elem,url){
-    var apiUrl = scApiUrl(url, apiKey);
-    $.getJSON(apiUrl, function(data) {
-        if(data.duration){
-          data.permalink_url = url;
-          $.scPlayer.loadTrackInfoAndPlay($elem,data);//Call the previous function
-        }
-    });
-  }
-  
-  $.scPlayer.loadTrackInfoAndPlay=function($elem,track){
-        var playerObj=players[$elem.data('sc-player').id];
-        playerObj.tracks.push(track);
-        var index =playerObj.tracks.length-1;
-        var $list=$(playerObj.node).find('.sc-trackslist');
-        var $artworks=$(playerObj.node).find(".sc-artwork-list");
-        // add to playlist
-        var $li=$('<li><a href="' + track.permalink_url +'">' + track.title + '</a><span class="sc-track-duration">' + timecode(track.duration) + '</span></li>')
-            .data('sc-track', {id:index})
-            .appendTo($list);
-        // add to artwork list
-        $('<li></li>')
-            .append(artworkImage(track, true))
-            .appendTo($artworks)
-            .data('sc-track', track);
-        $li.click();
-  }
-  */
+  // -------------------------------------------------------------------
   
   // the default Auto-Initialization
   $(function() {

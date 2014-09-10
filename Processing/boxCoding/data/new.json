@@ -1,0 +1,11 @@
+{
+  "items": [{
+    "id": 0,
+    "value": "2"
+  }],
+  "command": "repeat",
+  "options": [{
+    "id": 0,
+    "value": "loud"
+  }]
+}

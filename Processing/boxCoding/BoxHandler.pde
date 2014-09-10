@@ -229,12 +229,19 @@ void removeBoxOption(BoxOption aBox) {
 boolean hasMoreLines = false;
 
 void relocateBoxes() {
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosC = 0;
+  for (BoxCommand c: cboxes) {
+    if (c.getStatus() != 3) {
+      startingHPosC += c.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosC + boxHorizontalGap)/2;
   posVCounterC = marginTopC;
 
   for (BoxCommand c: cboxes) {
     if (c.getStatus() != 3) {
-      if (posHCounter + c.boxWidth > width - marginLeftRight - executeButtonGap) {
+      if (posHCounter + c.boxWidth > width - marginLeftRight) {
         posHCounter = marginLeftRight;
         posVCounterC += c.boxHeight + boxVerticalGap;
       }
@@ -243,7 +250,14 @@ void relocateBoxes() {
     }
   }
 
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosI = 0;
+  for (BoxItem i: iboxes) {
+    if (i.getStatus() != 3) {
+      startingHPosI += i.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosI + boxHorizontalGap)/2;
   posVCounterI = posVCounterC + cboxes[0].boxHeight + boxVerticalGap+10;
 
   for (BoxItem i: iboxes) {
@@ -257,7 +271,14 @@ void relocateBoxes() {
     }
   }
 
-  posHCounter = marginLeftRight;
+  // Calculating H starting position to be (always) centered
+  startingHPosO = 0;
+  for (BoxOption o: oboxes) {
+    if (o.getStatus() != 3) {
+      startingHPosO += o.boxWidth + boxHorizontalGap;
+    }
+  }
+  posHCounter = (width- startingHPosO + boxHorizontalGap)/2;
   posVCounterO = posVCounterI + iboxes[0].boxHeight + boxVerticalGap+10;
 
 
@@ -275,12 +296,12 @@ void relocateBoxes() {
   /* Starting position for command line phrase*/
   posHCounterSentence = marginLeftRight + promptGap/2;
   if (mobile) {
-    posVCounterSentence = height - (fontSizeRef * 6) + marginTopC;
+    posVCounterSentence = height/2 + marginTopC;
   }
   else {
     posVCounterSentence = height - (fontSizeRef * 3) + marginTopC;
   }
-  posHCounterSentence = posHCounterSentence;
+  //posHCounterSentence = posHCounterSentence;
   posHPrompt = posHCounterSentence - punctuationGapLR;
   posVClosedParenthesis = posVPrompt = posVCounterSentence;
 
@@ -298,8 +319,11 @@ void relocateBoxes() {
   // COMMAND LINE COMMANDS RELOCATION AND PUNCTUATION
   while (bcPointer != null) {
     sentence.add(bcPointer.getKey());
+    
+    //json.setString("command", bcPointer.getKey());
+    
     if (posHCounterSentence + bcPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap;
       posVCounterSentence += bcPointer.boxHeight + boxVerticalGap;
     }
     bcPointer.reallocate(posHCounterSentence, posVCounterSentence);
@@ -327,10 +351,19 @@ void relocateBoxes() {
   boolean containsAllSongs = false;
 
   // COMMAND LINE ITEMS RELOCATION AND PUNCTUATION
+//  int c=0;
+//  JSONArray iValues = new JSONArray();
+  
   while (biPointer != null) {
     sentence.add(biPointer.getKey());
+    
+//    JSONObject iItems = new JSONObject();
+//    iItems.setInt("id", c);
+//    iItems.setString("value", biPointer.getKey());
+//    iValues.setJSONObject(c, iItems);
+    
     if (posHCounterSentence + biPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap/2 + punctuationGapLR/2;
       posVCounterSentence += biPointer.boxHeight + boxVerticalGap;
     }
     // if one or more songs are present
@@ -360,7 +393,9 @@ void relocateBoxes() {
     biPointer = biPointer.next;
     isFirst = false;
     execStatus = true;
+//    c++;
   }
+//  json.setJSONArray("items", iValues);
 
   if (containsAllSongs) {
     posHClosedParenthesis = posHPrompt = posHCounterSentence - punctuationGapLR;
@@ -410,18 +445,27 @@ void relocateBoxes() {
     }
   }
 
+//  int d=0;
+//  JSONArray oValues = new JSONArray();
+      
   // COMMAND LINE OPTIONS RELOCATION AND PUNCTUATION
   while (boPointer != null) {
     sentence.add(boPointer.getKey());
+//    JSONObject oItems = new JSONObject();
+//    oItems.setInt("id", d);
+//    oItems.setString("value", boPointer.getKey());
+//    oValues.setJSONObject(d, oItems);
     numOptions ++;
     if (posHCounterSentence + boPointer.boxWidth > width - marginLeftRight - executeButtonGap) {
-      posHCounterSentence = marginLeftRight * 1.5 + marginLeftRight;
+      posHCounterSentence = marginLeftRight + promptGap/2 + punctuationGapLR/2;
       posVCounterSentence += boPointer.boxHeight + boxVerticalGap;
     }
 
     boPointer.reallocate(posHCounterSentence, posVCounterSentence);
     posHCounterSentence += boPointer.boxWidth + boxHorizontalGapCommandLine;
     boPointer = boPointer.next;
+//    json.setJSONArray("options", oValues);
+//    d++;
   }
 
   if (numOptions >= 1) {
@@ -434,6 +478,6 @@ void relocateBoxes() {
     for (BoxOption o: oboxes)
       o.comma = "";
   }
-
+//  saveJSONObject(json, "data/new.json");
 }
 
