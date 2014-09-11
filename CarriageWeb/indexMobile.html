@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="en">
   <head>
-	<link href='http://fonts.googleapis.com/css?family=Muli' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Variclap Site">
@@ -34,33 +34,24 @@
 			}
 		};
 		console.log(isMobile.any());
-		if ( isMobile.any() ) window.location = "indexMobile.html";
-    </script>
-    <style>
-        canvas:focus{outline:none;}
-    </style>
-    
-    <script type="text/javascript">
-    	window.onload = function init(){
-			loadTracks(['bot', 'silverk', 'grips', 'burlin', 'fourxx'], 70, false, false);
-    	}
-    </script>
+		if ( !isMobile.any() ) window.location = "index.html";
+    </script> 
    </head>
   
   <body>
+<!--    <div class="contenedor"> -->
     <div class="row">
       <div class="large-12 columns">
+<!-- 		<h1>Variclap</h1> -->
 		<h1><img src="img/logoweb.png" alt="varilogo" style="width:300px;"></h1>
-		<h3>carriαge_movement EP</h3>
-		<hr>
+		<h2>carriage_movement EP</h2>
       </div>
     </div>
     
     <div class="row">
       <div class="large-12 columns">
-	  	<div style="width:800px; margin:0 auto;">
-			<canvas id="boxCoding" data-processing-sources="js/processing/boxCoding.pde">
-				boxCoding.style.border = "none";
+	  	<div style="width:320px; margin:0 auto;">
+			<canvas id="boxCoding" data-processing-sources="js/processing/boxCodingSmall.pde">
 			  <!-- Note: you can put any alternative content here. -->
 			</canvas>
 			<noscript>
@@ -75,30 +66,24 @@
       <div class="large-12 columns">
 	  	<div id="zsPlayer">
             <div class="sc-player">
-            	<a></a>
-    <script type="text/javascript">
-    	window.onload = function init(){
-			console.log("YO");
-			loadTracks(['bot', 'silverk', 'dgrips', 'burlin', 'fourxx'], 70, false, false);
-    	}
-    </script>
+              <a></a>
             </div>
         </div>
       </div>
-    </div>
+    </div>     
 
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
     <script>
       $(document).foundation();
     </script>
+    <!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> -->
     <script type="text/javascript" src="js/soundcloud.player.api.js"></script>
     <script type="text/javascript" src="js/sc-player.js"></script>
     <script type="text/javascript" src="js/zsPlayer.js"></script>
     <script type="text/javascript" src="js/processing/processing.js"></script>
-    
-	<object id="sentence"/>
 
+	<object id="sentence"/>
     <script type="text/javascript">
 
 		var bound = false;
@@ -161,7 +146,8 @@
 			console.log(songList);
 			playTracks(songList, volume, repeat, shuffle);
 		}
-	</script>
 
+	</script>
+<!-- 	</div> -->
   </body>
 </html>

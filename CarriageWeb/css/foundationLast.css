@@ -41,8 +41,9 @@ body {
 body {
   background: #282628;
   /*color: #222222;*/
-  padding-top: 5%;
+  padding: 0;
   margin: 0;
+  margin-top: 75px;
   font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
   font-weight: normal;
   font-style: normal;
@@ -50,6 +51,15 @@ body {
   position: relative;
   cursor: default; }
   
+.contenedor {
+	background: #3F3F3F;
+	width: 70%;
+	height: 85%;
+	margin-top: 50px;
+	margin-left: auto;
+    margin-right: auto;
+}
+
 a:hover {
   cursor: pointer; }
 
@@ -100,7 +110,7 @@ select {
 
 .row {
   z-index: 1006;
-  background: #3F3E3F;
+  background: #3F3D3F;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -1850,8 +1860,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #222222;
   text-rendering: optimizeLegibility;
   text-align: center;
-  margin-top: 25px;
-/*   margin-bottom: 25px; */
+  margin-bottom: 10px;
   line-height: 1.4; }
   h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
     font-size: 60%;
@@ -1859,15 +1868,17 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 0; }
 
 h1 {
-  margin-bottom: 10px;
+  margin-top: 25px;
   font-size: 2.125rem; }
 
 h2 {
+  color: #FFFFFF;
   font-size: 1.6875rem; }
 
 h3 {
+  margin-top: 0px;
+  margin-bottom: 20px;
   color: #FFFFFF;
-  margin-top: 10px;
   font-size: 1.375rem; }
 
 h4 {
@@ -1890,9 +1901,9 @@ hr {
   border: solid #dddddd;
   border-width: 1px 0 0;
   clear: both;
-  margin: 1.25rem 0 2rem;
-  margin-right: 10%;
-  margin-left: 10%;
+  margin: 1.25rem 0 40px;
+  margin-left: 100px;
+  margin-right: 100px;
   height: 0; }
 
 /* Helpful Typography Defaults */

@@ -5,22 +5,15 @@
  */
 import java.util.List;
 
-/* General page settings */
-//int screenWidth = 800, screenHeight = 400;
-//int screenWidthMobile = 400, screenHeightMobile = 300;
 public boolean mobile = false;
 
-void setMobile (boolean isMobile) {
-  mobile = isMobile;
-}
-
 /* Fonts */
-float fontSizeRef = 22;
+float fontSizeRef = 20;
 
 /* Boxes general settings */
 float boxHorizontalGap = 15, boxVerticalGap = 15, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
 float startingHPosC = 0, startingHPosI = 0, startingHPosO = 0;
-float delta = 10;
+float delta = 15;
 float marginLeftRight = delta;
 float marginTopC = delta;
 float executeButtonGap = fontSizeRef * 2.5;
@@ -80,16 +73,12 @@ BoxOption boHead = null;
 
 public List<String> sentence;
 public String sentenza;
-//JSONObject json = new JSONObject();
 
 PFont font;
 
-// JS binding
-//interface JavaScript {
-//  void showRequest(String sentenza); }
-
 interface JavaScript {
-  void showRequest(String sentenza); }
+  void showRequest(String sentenza);
+}
 
 
 void bindJavascript(JavaScript js) {
@@ -109,7 +98,7 @@ void setup() {
     //fontSizeRef /= 1.1;
   }
   else {
-    size(960, 320);
+    size(800, 280);
   }
   // colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
@@ -132,6 +121,7 @@ void setup() {
 
   /* Rellocate boxes from the corner */
   relocateBoxes();
+  
 }
 
 void draw() {
@@ -153,11 +143,13 @@ void draw() {
     text(">>", marginLeftRight, height/2  + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   else {
-    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -2, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +2, 5); 
+    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -1, width-marginLeftRight/2-executeButtonGap, (fontSizeRef*2)-delta/2 +5, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2 -2, width-executeButtonGap, height - fontSizeRef - 2);
+    triangle(width-executeButtonGap+delta/2, height-(fontSizeRef*3)+delta/4 -1, width-marginLeftRight/2, height-fontSizeRef*2 + 1.5, width-executeButtonGap+delta/2, height - fontSizeRef +1, 5);
     fill(0, 0, 0);
-    text(">>", marginLeftRight, height - (fontSizeRef * 3) + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
+    textFont(font, fontSizeRef+3);
+    text(">>", marginLeftRight -2, height - (fontSizeRef * 3) + marginTopC, promptGap/2, fontSizeRef * 1.5);
+    textFont(font, fontSizeRef);
   }
   updateExecButtonColor();
 
@@ -918,24 +910,26 @@ class Box {
     stroke(frameColor[0], frameColor[1], frameColor[2], fontTransparency);
     // Box Fill Color
     fill(fillColor[0], fillColor[1], fillColor[2], fillTransparency);
-    rect(positionHmov, positionVmov-delta/2, boxWidth, boxHeight /*, cornerRadius*/);
+    rect(positionHmov, positionVmov-delta/2-1, boxWidth, boxHeight+2 /*, cornerRadius*/);
     // Font Color
     fill(fontColor[0], fontColor[1], fontColor[2], fontTransparency);
     textFont(font, fontSizeRef);
-    text(keyword, positionHmov, positionVmov + 8 -delta/2, boxWidth, boxHeight);
+    text(keyword, positionHmov, positionVmov + 6 -delta/2, boxWidth, boxHeight);
   }
 
   void drawPunctuation() {
     /* Drawing punctuation marks */
     fill(0, 0, 0, transpSymbol);
-    text(openParenthesis, positionH+boxWidth, positionV +4, punctuationGapLR, boxHeight);
+    textFont(font, fontSizeRef+5);
+    text(openParenthesis, positionH+boxWidth, positionV -2, punctuationGapLR, boxHeight);
     // Only for the closed parenthesis, posHClosedParenthesis custom variable is used, see BoxHandler.pde
-    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis +4, punctuationGapLR, boxHeight);
-    text(openBrackets, positionH - punctuationGapLR, positionV +4 , punctuationGapLR, boxHeight);
-    text(closedBrackets, positionH + boxWidth, positionV +4, punctuationGapLR, boxHeight);
-    text(comma, positionH - punctuationGapLR, positionV +5, punctuationGapLR, boxHeight);
+    text(closedParenthesis, posHClosedParenthesis, posVClosedParenthesis -2, punctuationGapLR, boxHeight);
+    text(openBrackets, positionH - punctuationGapLR, positionV -2 , punctuationGapLR, boxHeight);
+    text(closedBrackets, positionH + boxWidth, positionV -2, punctuationGapLR, boxHeight);
+    text(comma, positionH - punctuationGapLR, positionV -4, punctuationGapLR, boxHeight);
     fill(0, 0, 0, 255*sin(frameCounter));
-    text("▒", posHPrompt + punctuationGapLR - delta/2, posVPrompt +4, punctuationGapLR, boxHeight);
+    textFont(font, fontSizeRef);
+    text("▒", posHPrompt + punctuationGapLR - delta/2, posVPrompt, punctuationGapLR, boxHeight);
   }
 
   void reallocate(float posH, float posV) {

@@ -5,15 +5,15 @@
  */
 import java.util.List;
 
-public boolean mobile = false;
+public boolean mobile = true;
 
 /* Fonts */
-float fontSizeRef = 20;
+float fontSizeRef = 15;
 
 /* Boxes general settings */
-float boxHorizontalGap = 15, boxVerticalGap = 15, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
+float boxHorizontalGap = 10, boxVerticalGap = 15, boxHorizontalGapCommandLine = boxHorizontalGap * 2;
 float startingHPosC = 0, startingHPosI = 0, startingHPosO = 0;
-float delta = 15;
+float delta = 10;
 float marginLeftRight = delta;
 float marginTopC = delta;
 float executeButtonGap = fontSizeRef * 2.5;
@@ -77,8 +77,7 @@ public String sentenza;
 PFont font;
 
 interface JavaScript {
-  void showRequest(String sentenza);
-}
+  void showRequest(String sentenza); }
 
 
 void bindJavascript(JavaScript js) {
@@ -94,11 +93,11 @@ void setup() {
   //mobile = true;
   frameRate(30);
   if (mobile) { 
-    size(400, 400);
+    size(320, 300);
     //fontSizeRef /= 1.1;
   }
   else {
-    size(800, 280);
+    size(800, 320);
   }
   // colorMode(RGB,1); // color nomenclature: RGB, HSV,...
   textSize(fontSizeRef);
@@ -121,7 +120,6 @@ void setup() {
 
   /* Rellocate boxes from the corner */
   relocateBoxes();
-  
 }
 
 void draw() {
@@ -143,13 +141,11 @@ void draw() {
     text(">>", marginLeftRight, height/2  + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   else {
-    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -1, width-marginLeftRight/2-executeButtonGap, (fontSizeRef*2)-delta/2 +5, 5); 
+    rect(marginLeftRight/2, height-(fontSizeRef * 3)+delta/4 -2, width-marginLeftRight-executeButtonGap, (fontSizeRef*2)-delta/2 +2, 5); 
     fill(execButtonColor[0], execButtonColor[1], execButtonColor[2]);
-    triangle(width-executeButtonGap+delta/2, height-(fontSizeRef*3)+delta/4 -1, width-marginLeftRight/2, height-fontSizeRef*2 + 1.5, width-executeButtonGap+delta/2, height - fontSizeRef +1, 5);
+    triangle(width-executeButtonGap, height-(fontSizeRef*3)+delta/4 -1, width-delta*2, height-fontSizeRef*2 -2, width-executeButtonGap, height - fontSizeRef - 2);
     fill(0, 0, 0);
-    textFont(font, fontSizeRef+3);
-    text(">>", marginLeftRight -2, height - (fontSizeRef * 3) + marginTopC, promptGap/2, fontSizeRef * 1.5);
-    textFont(font, fontSizeRef);
+    text(">>", marginLeftRight, height - (fontSizeRef * 3) + marginTopC + 4, promptGap/2, fontSizeRef * 1.5);
   }
   updateExecButtonColor();
 
